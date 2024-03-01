@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -7,6 +8,8 @@
 #include <vector>
 #include <sstream>
 #include <random>
+#include <thread>
+
 
 // This is a modification of the TSP problem
 // The problem is to find two cycles that cover all the nodes
@@ -41,7 +44,11 @@ void print_matrix(const std::vector<std::vector<int>>& matrix) {
     }
 }
 
-void greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
+std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
+
+    int min_distance = INT_MAX;
+    int min_index = -1;
+    int min_verticle = -1;
 
     std::vector<int> cycle1;
     std::vector<int> cycle2;
@@ -54,7 +61,12 @@ void greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
     std::uniform_int_distribution<> distr(0, dim - 1);
 
     const int random_index = distr(gen);
-    const int random_index2 = distr(gen);
+    int random_index2;
+
+    do {
+        random_index2 = distr(gen);
+    } while (random_index2 == random_index);
+
 
     cycle1.push_back(random_index);
     cycle2.push_back(random_index2);
@@ -63,11 +75,11 @@ void greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
 
     // while there are still unvisited nodes
 
-    while(std::any_of(visited.begin(), visited.end(), [](bool v){ return !v; })) {
+    while(!std::all_of(visited.begin(), visited.end(), [](bool v){ return v; })) {
 
-        int min_distance = INT_MAX;
-        int min_index = -1;
-        int min_verticle = -1;
+        min_distance = INT_MAX;
+        min_index = -1;
+        min_verticle = -1;
 
         for (int i = 0; i < dim; i++) {
             if (!visited[i]) {
@@ -86,10 +98,38 @@ void greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
             }
         }
         cycle1.insert(cycle1.begin() + min_index, min_verticle);
+        visited[min_verticle] = true;
 
+        min_distance = INT_MAX;
+        min_index = -1;
+        min_verticle = -1;
+
+        for (int i = 0; i < dim; i++) {
+            if (!visited[i]) {
+
+                const int c2_size = (int) cycle2.size();
+                for(int j = 0; j < c2_size; j++) {
+                    const int next_j = (j + 1) % c2_size;
+                    int distance_update = dist_mat[cycle2[j]][i] + dist_mat[i][cycle2[next_j]] - dist_mat[cycle2[j]][cycle2[next_j]];
+
+                    if (distance_update < min_distance) {
+                        min_distance = distance_update;
+                        min_index = j;
+                        min_verticle = i;
+                    }
+                }
+            }
+        }
+        cycle2.insert(cycle2.begin() + min_index, min_verticle);
+        visited[min_verticle] = true;
 
     }
 
+    // increment the index by 1 to match the node id
+    std::transform(cycle1.begin(), cycle1.end(), cycle1.begin(), [](int v) { return v + 1; });
+    std::transform(cycle2.begin(), cycle2.end(), cycle2.begin(), [](int v) { return v + 1; });
+
+    return std::make_pair(cycle1, cycle2);
 
 }
 
@@ -151,6 +191,41 @@ int main(const int argc, char** argv) {
 
     std::cout << "Distance matrix [4,5] [5,4] " << dist_mat[3][4] << " " << dist_mat[4][3] << std::endl;
 
+    std::pair<std::vector<int>, std::vector<int>> c = greedy_nearest_neighbour(dist_mat);
+
+    std::cout << "Cycle 1: ";
+    for (const auto& elem : c.first) {
+        std::cout << elem << " ";
+    }
+
+    std::cout << std::endl;
+
+    std::cout << "Cycle 2: ";
+    for (const auto& elem : c.second) {
+        std::cout << elem << " ";
+    }
+
+    std::ofstream cycle1_file("cycle1.txt");
+    if (cycle1_file.is_open()) {
+        for (const auto& elem : c.first) {
+            cycle1_file << elem << " ";
+        }
+        cycle1_file.close();
+        std::cout << "Cycle 1 exported to cycle1.txt" << std::endl;
+    } else {
+        std::cerr << "Unable to open cycle1.txt for export." << std::endl;
+    }
+
+    std::ofstream cycle2_file("cycle2.txt");
+    if (cycle2_file.is_open()) {
+        for (const auto& elem : c.second) {
+            cycle2_file << elem << " ";
+        }
+        cycle2_file.close();
+        std::cout << "Cycle 2 exported to cycle2.txt" << std::endl;
+    } else {
+        std::cerr << "Unable to open cycle2.txt for export." << std::endl;
+    }
 
 
     return 0;
