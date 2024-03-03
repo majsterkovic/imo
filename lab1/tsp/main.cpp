@@ -44,7 +44,48 @@ void print_matrix(const std::vector<std::vector<int>>& matrix) {
     }
 }
 
-std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vector<std::vector<int>> &dist_mat) {
+void print_cycle(const std::vector<int>& cycle) {
+    for (const auto& elem : cycle) {
+        std::cout << elem << " : ";
+    }
+    std::cout << std::endl;
+}
+
+int choose_random_node(const int from, const int to) {
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distr(from, to - 1);
+
+    return distr(gen);
+}
+
+int choose_new_random_node(const int from, const int to, const int old) {
+
+    int new_random = old;
+    while (new_random == old) {
+        new_random = choose_random_node(from, to);
+    }
+
+    return new_random;
+}
+
+int choose_nearest_neighbour(const std::vector<std::vector<int>>& dist_mat, const int current_node, const std::vector<bool>& visited) {
+
+    int distance = INT_MAX;
+    int index = -1;
+
+    for(int i = 0; i < dist_mat.size(); i++) {
+        if (i != current_node && visited[i] == false && dist_mat[current_node][i] < distance) {
+            distance = dist_mat[current_node][i];
+            index = i;
+        }
+    }
+
+    return index;
+}
+
+std::pair<std::vector<int>, std::vector<int>> greedy_cycle(std::vector<std::vector<int>> &dist_mat) {
 
     int min_distance = INT_MAX;
     int min_index = -1;
@@ -54,26 +95,30 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
     std::vector<int> cycle2;
 
     const int dim = (int) dist_mat.size();
-    std::vector<bool> visited(dim, false);
+    std::vector visited(dim, false);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(0, dim - 1);
+    // wybierz (np. losowo) wierzchołek startowy
+    // wybierz najbliższy wierzchołek i stwórz z tych dwóch wierzchołków niepełny cykl
 
-    const int random_index = distr(gen);
-    int random_index2;
-
-    do {
-        random_index2 = distr(gen);
-    } while (random_index2 == random_index);
-
-
+    const int random_index = choose_new_random_node(0, dim, -1);
+    const int nearest_neighbour = choose_nearest_neighbour(dist_mat, random_index, visited);
     cycle1.push_back(random_index);
-    cycle2.push_back(random_index2);
-    visited[random_index] = true;
-    visited[random_index2] = true;
+    cycle1.push_back(nearest_neighbour);
 
-    // while there are still unvisited nodes
+    print_cycle(cycle1);
+
+    visited[random_index] = true;
+    visited[nearest_neighbour] = true;
+
+    const int random_index2 = choose_new_random_node(0, dim, random_index);
+    const int nearest_neighbour2 = choose_nearest_neighbour(dist_mat, random_index2, visited);
+    cycle2.push_back(random_index2);
+    cycle2.push_back(nearest_neighbour2);
+
+    visited[random_index2] = true;
+    visited[nearest_neighbour2] = true;
+
+    // dopóki nie zostały dodane wszystkie wierzchołki
 
     while(!std::all_of(visited.begin(), visited.end(), [](bool v){ return v; })) {
 
@@ -81,11 +126,14 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
         min_index = -1;
         min_verticle = -1;
 
+        ///wstaw do cyklu wierzchołek, który minimalizuje długość cyklu
+        
         for (int i = 0; i < dim; i++) {
             if (!visited[i]) {
 
                 const int c1_size = (int) cycle1.size();
                 for(int j = 0; j < c1_size; j++) {
+                //for(int j = 0; j < 1; j++) {
                     const int next_j = (j + 1) % c1_size;
                     int distance_update = dist_mat[cycle1[j]][i] + dist_mat[i][cycle1[next_j]] - dist_mat[cycle1[j]][cycle1[next_j]];
 
@@ -97,7 +145,7 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
                 }
             }
         }
-        cycle1.insert(cycle1.begin() + min_index, min_verticle);
+        cycle1.insert(cycle1.begin() + min_index + 1, min_verticle);
         visited[min_verticle] = true;
 
         min_distance = INT_MAX;
@@ -109,6 +157,7 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
 
                 const int c2_size = (int) cycle2.size();
                 for(int j = 0; j < c2_size; j++) {
+                //for(int j = 0; j < 1; j++) {
                     const int next_j = (j + 1) % c2_size;
                     int distance_update = dist_mat[cycle2[j]][i] + dist_mat[i][cycle2[next_j]] - dist_mat[cycle2[j]][cycle2[next_j]];
 
@@ -120,7 +169,7 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
                 }
             }
         }
-        cycle2.insert(cycle2.begin() + min_index, min_verticle);
+        cycle2.insert(cycle2.begin() + min_index + 1, min_verticle);
         visited[min_verticle] = true;
 
     }
@@ -133,7 +182,7 @@ std::pair<std::vector<int>, std::vector<int>> greedy_nearest_neighbour(std::vect
 
 }
 
-void greedy_cycle() {}
+void nearest_neighbour() {}
 
 void regret_heuristic() {}
 
@@ -191,7 +240,7 @@ int main(const int argc, char** argv) {
 
     std::cout << "Distance matrix [4,5] [5,4] " << dist_mat[3][4] << " " << dist_mat[4][3] << std::endl;
 
-    std::pair<std::vector<int>, std::vector<int>> c = greedy_nearest_neighbour(dist_mat);
+    std::pair<std::vector<int>, std::vector<int>> c = greedy_cycle(dist_mat);
 
     std::cout << "Cycle 1: ";
     for (const auto& elem : c.first) {

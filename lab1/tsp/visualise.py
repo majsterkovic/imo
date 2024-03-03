@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def visualize_cycles(data, cycles):
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(18, 16))
 
     for node, (x, y) in data.items():
         plt.scatter(x, y, color='red', s=30)
