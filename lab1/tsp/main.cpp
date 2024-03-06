@@ -9,7 +9,7 @@
 #include <sstream>
 #include <random>
 #include <thread>
-
+#include <climits>
 
 // This is a modification of the TSP problem
 // The problem is to find two cycles that cover all the nodes
@@ -48,6 +48,18 @@ void print_cycle(const std::vector<int>& cycle) {
         std::cout << elem << " : ";
     }
     std::cout << std::endl;
+}
+
+long calculate_cycle_length(const std::vector<std::vector<int>>& dist_mat, const std::vector<int>& cycle) {
+
+    long length = 0;
+    const int dim = (int) cycle.size();
+
+    for (int i = 0; i < dim; i++) {
+        length += dist_mat[cycle[i]][cycle[(i + 1) % dim]];
+    }
+
+    return length;
 }
 
 int choose_random_node(const int from, const int to) {
@@ -257,15 +269,20 @@ std::pair<std::vector<int>, std::vector<int>> nearest_neighbour(std::vector<std:
     return std::make_pair(cycle1, cycle2);
 }
 
-void regret_heuristic() {}
+std::pair<std::vector<int>, std::vector<int>> regret_heuristic() {
+    return std::make_pair(std::vector<int>(), std::vector<int>());
+}
 
 int main(const int argc, char** argv) {
 
     std::string filename;
+    std::string method;
 
-    if (argc > 1) {
+    if (argc > 2) {
         filename = argv[1];
+        method = argv[2];
         std::cout << "Filename: " << filename << std::endl;
+        std::cout << "Method: " << method << std::endl;
     } else {
         std::cout << "Invalid number of arguments" << std::endl;
     }
@@ -306,14 +323,31 @@ int main(const int argc, char** argv) {
             }
     }
 
-
     std::cout << "Data size: " << data.size() << std::endl;
-
     std::vector dist_mat = create_distance_matrix(data);
+    std::pair<std::vector<int>, std::vector<int>> c;
 
-    std::cout << "Distance matrix [4,5] [5,4] " << dist_mat[3][4] << " " << dist_mat[4][3] << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
 
-    std::pair<std::vector<int>, std::vector<int>> c = nearest_neighbour(dist_mat);
+    if (method == "nearest_neighbour") {
+        c = nearest_neighbour(dist_mat);
+    } else if (method == "greedy_cycle") {
+        c = greedy_cycle(dist_mat);
+    } else if (method == "regret_heuristic") {
+        c = regret_heuristic();
+    } else {
+        std::cerr << "Invalid method" << std::endl;
+    }
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    std::cout << "Time taken by function: " << duration.count() << " milliseconds" << std::endl;
+    std::ofstream time_file("time_" + method + ".txt", std::ios_base::app);
+    if (time_file.is_open()) {
+        time_file << duration.count() << std::endl;
+        time_file.close();
+    }
 
     std::cout << "Cycle 1: ";
     for (const auto& elem : c.first) {
