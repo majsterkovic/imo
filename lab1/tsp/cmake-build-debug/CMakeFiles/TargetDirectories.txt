@@ -1,3 +1,3 @@
-C:/Users/Mariusz/Desktop/imo/lab1/tsp/cmake-build-debug/CMakeFiles/tsp.dir
-C:/Users/Mariusz/Desktop/imo/lab1/tsp/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Mariusz/Desktop/imo/lab1/tsp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/jakubgolab/Desktop/Politechnika Poznańska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp/cmake-build-debug/CMakeFiles/tsp.dir
+/Users/jakubgolab/Desktop/Politechnika Poznańska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/jakubgolab/Desktop/Politechnika Poznańska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp/cmake-build-debug/CMakeFiles/rebuild_cache.dir

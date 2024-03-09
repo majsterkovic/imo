@@ -1,3 +1,1 @@
-"C:\Users\Mariusz\AppData\Local\Programs\CLion Nova\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\tsp.dir/objects.a
-C:\Users\Mariusz\AppData\Local\Programs\CLIONN~1\bin\mingw\bin\ar.exe qc CMakeFiles\tsp.dir/objects.a @CMakeFiles\tsp.dir\objects1.rsp
-C:\Users\Mariusz\AppData\Local\Programs\CLIONN~1\bin\mingw\bin\G__~1.EXE -g -Wl,--whole-archive CMakeFiles\tsp.dir/objects.a -Wl,--no-whole-archive -o tsp.exe -Wl,--out-implib,libtsp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\tsp.dir\linkLibs.rsp
+/Library/Developer/CommandLineTools/usr/bin/c++ -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -mmacosx-version-min=13.1 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/tsp.dir/main.cpp.o -o tsp 

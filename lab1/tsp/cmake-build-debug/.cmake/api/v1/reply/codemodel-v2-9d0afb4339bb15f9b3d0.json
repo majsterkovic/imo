@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.28"
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "tsp::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-tsp-Debug-5b372baa6fde5d684cd0.json",
+					"jsonFile" : "target-tsp-Debug-bde96cf52d926379c00e.json",
 					"name" : "tsp",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/Mariusz/Desktop/imo/lab1/tsp/cmake-build-debug",
-		"source" : "C:/Users/Mariusz/Desktop/imo/lab1/tsp"
+		"build" : "/Users/jakubgolab/Desktop/Politechnika Pozna\u0144ska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp/cmake-build-debug",
+		"source" : "/Users/jakubgolab/Desktop/Politechnika Pozna\u0144ska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp"
 	},
 	"version" : 
 	{

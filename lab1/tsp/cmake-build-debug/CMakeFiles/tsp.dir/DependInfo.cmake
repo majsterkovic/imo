@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/Mariusz/Desktop/imo/lab1/tsp/main.cpp" "CMakeFiles/tsp.dir/main.cpp.obj" "gcc" "CMakeFiles/tsp.dir/main.cpp.obj.d"
+  "/Users/jakubgolab/Desktop/Politechnika Poznańska/ROK 4/semestr 8/Inteligentne metody optymalizacji/imo/lab1/tsp/main.cpp" "CMakeFiles/tsp.dir/main.cpp.o" "gcc" "CMakeFiles/tsp.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
