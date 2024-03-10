@@ -478,7 +478,7 @@ int main(const int argc, char** argv) {
         cycle_file << std::endl;
 
         cycle_file << run_nr << ": ";
-        cycle_file << calculate_cycle_length(dist_mat, c.first) << " ";
+        cycle_file << calculate_cycle_length(dist_mat, c.second) << " ";
 
         for (const auto& elem : c.second) {
             cycle_file << elem << " ";
