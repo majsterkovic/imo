@@ -20,7 +20,8 @@ def visualize_cycles(data, cycles):
     plt.xlabel('X-coordinate')
     plt.ylabel('Y-coordinate')
     plt.grid(True)
-    plt.show()
+    # plt.show()
+    plt.savefig("A_regret_heuristic.png")
 
 if __name__ == "__main__":
 
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     all_cycles = [cycle1, cycle2]
 
     data = {}
-    with open('kroB100.tsp', 'r') as file:
+    with open('kroA200.tsp', 'r') as file:
         for line in file:
             if line.startswith('EOF'):
                 break
