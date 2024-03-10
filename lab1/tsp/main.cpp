@@ -89,9 +89,11 @@ std::pair<int, int> choose_nearest_neighbour(const std::vector<std::vector<int>>
     int index = -1;
 
     for(int i = 0; i < dist_mat.size(); i++) {
-        if (i != current_node && visited[i] == false && dist_mat[current_node][i] < distance) {
-            distance = dist_mat[current_node][i];
-            index = i;
+        if (!visited[i]) {
+            if (i != current_node && dist_mat[current_node][i] < distance) {
+                distance = dist_mat[current_node][i];
+                index = i;
+            }
         }
     }
 
@@ -360,32 +362,32 @@ std::pair<std::vector<int>, std::vector<int>> regret_heuristic(const std::vector
         unvisited_cities.erase(best_city);
     }
 
-    for (int i = 0; i < cycle1.size(); ++i) {
-        cycle1[i]++;
-    }
+    std::transform(cycle1.begin(), cycle1.end(), cycle1.begin(), [](int v) { return v + 1; });
+    std::transform(cycle2.begin(), cycle2.end(), cycle2.begin(), [](int v) { return v + 1; });
 
-    for (int i = 0; i < cycle2.size(); ++i) {
-        cycle2[i]++;
-    }
+    cycle1.pop_back();
+    cycle2.pop_back();
 
     return std::make_pair(cycle1, cycle2);
 }
 
 int main(const int argc, char** argv) {
 
-    std::string filename;
+    std::string instance;
     std::string method;
+    int run_nr;
 
     if (argc > 2) {
-        filename = argv[1];
+        instance = argv[1];
         method = argv[2];
-        std::cout << "Filename: " << filename << std::endl;
+        run_nr = std::stoi(argv[3]);
+        std::cout << "Filename: " << instance << std::endl;
         std::cout << "Method: " << method << std::endl;
     } else {
         std::cout << "Invalid number of arguments" << std::endl;
     }
 
-    std::ifstream file(filename);
+    std::ifstream file(instance);
     std::string line;
 
     std::map<int, std::pair<int, int>> data;
@@ -421,9 +423,7 @@ int main(const int argc, char** argv) {
             }
     }
 
-    std::cout << "Data size: " << data.size() << std::endl;
     std::vector dist_mat = create_distance_matrix(data);
-    std::cout << "Matrix size: " << dist_mat.size() << std::endl;
     std::pair<std::vector<int>, std::vector<int>> c;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -441,10 +441,9 @@ int main(const int argc, char** argv) {
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-    std::cout << "Time taken by function: " << duration.count() << " milliseconds" << std::endl;
-    std::ofstream time_file("time_" + method + ".txt", std::ios_base::app);
+    std::ofstream time_file("time_" + method + "_" + instance + ".txt", std::ios_base::app);
     if (time_file.is_open()) {
-        time_file << duration.count() << std::endl;
+        time_file << run_nr << ":" << duration.count() << std::endl;
         time_file.close();
     }
 
@@ -466,30 +465,31 @@ int main(const int argc, char** argv) {
     std::cout << "Cycle 2 length: " << calculate_cycle_length(dist_mat, c.second) << std::endl;
 
 
-    std::ofstream cycle1_file("cycle1_" + method + ".txt", std::ios_base::app);
-    if (cycle1_file.is_open()) {
-        cycle1_file << calculate_cycle_length(dist_mat, c.first) << " ";
-        for (const auto& elem : c.first) {
-            cycle1_file << elem << " ";
-        }
-        cycle1_file << std::endl;
-        cycle1_file.close();
-        std::cout << "Cycle 1 exported to cycle1.txt" << std::endl;
-    } else {
-        std::cerr << "Unable to open cycle1.txt for export." << std::endl;
-    }
+    std::ofstream cycle_file("cycle_" + method + "_" + instance + ".txt", std::ios_base::app);
+    if (cycle_file.is_open()) {
 
-    std::ofstream cycle2_file("cycle2_" + method + ".txt", std::ios_base::app);
-    if (cycle2_file.is_open()) {
-        cycle2_file << calculate_cycle_length(dist_mat, c.second) << " ";
-        for (const auto& elem : c.second) {
-            cycle2_file << elem << " ";
+        cycle_file << run_nr << ": ";
+        cycle_file << calculate_cycle_length(dist_mat, c.first) << " ";
+
+        for (const auto& elem : c.first) {
+            cycle_file << elem << " ";
         }
-        cycle2_file << std::endl;
-        cycle2_file.close();
-        std::cout << "Cycle 2 exported to cycle2.txt" << std::endl;
+
+        cycle_file << std::endl;
+
+        cycle_file << run_nr << ": ";
+        cycle_file << calculate_cycle_length(dist_mat, c.first) << " ";
+
+        for (const auto& elem : c.second) {
+            cycle_file << elem << " ";
+        }
+
+        cycle_file << std::endl;
+        cycle_file.close();
+
+        std::cout << "Cycle exported" << std::endl;
     } else {
-        std::cerr << "Unable to open cycle2.txt for export." << std::endl;
+        std::cerr << "Unable to open for export." << std::endl;
     }
 
     return 0;

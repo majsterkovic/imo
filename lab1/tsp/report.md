@@ -188,24 +188,24 @@ Funkcja regret_heuristic(distance_matrix, k=2):
 
 ## Wyniki Eksperymentu Obliczeniowego
 
-| Instancja | Metoda           | Średnia (min – max) |
-|-----------|------------------|---------------------|
-| kroB100 | Greedy Cycle      | 2605.43 (2172.0 – 4012.0) |
-|            | Nearest Neighbour      | 7091.19 (5931.0 – 10867.0) |
-|           | Regret Heuristic | 37145.56 (35534.0 - 40856.0) |
-| kroA200 | Greedy Cycle      | 16345.96 (15818.0 – 20363.0) |
-|            | Nearest Neighbour      | 48051.88 (47019.0 – 57790.0) |
-|           | Regret Heuristic | 268130.06 (257867.0 - 511873.0) |
+| Instancja | Metoda            | Średnia (min – max)           |
+|-----------|-------------------|-------------------------------|
+| kroA100   | Greedy Cycle      | 1661.9    (1505 – 2279)       |
+| kroA100   | Nearest Neighbour | 7428.58   (6909 – 21053)      |
+| kroA100   | Regret Heuristic  | 35047.51  (32536 – 41120)     |
+| kroB100   | Greedy Cycle      | 1668.07   (1503 – 2477)       |
+| kroB100   | Nearest Neighbour | 7293.5    (6899 – 12841)      |
+| kroB100   | Regret Heuristic  | 34894.93  (32749 – 46418)     |
+
 
 ## Wizualizacje Najlepszych Rozwiązań
 
-![Instancja kroB100 - Greedy Cycle](photos/B_greedy_cycle.png)
-![Instancja kroB100 - Nearest Neighbour](photos/B_nearest_neighbour.png)
-![Instancja kroB100 - Regret Heuristic](photos/B_regret_heuristic.png)
+| Instance  | Greedy Cycle | Nearest Neighbour | Regret Heuristic |
+|-----------|--------------|-------------------|------------------|
+| kroB100   | ![Greedy Cycle kroB100](photos/kroB100.tsp_greedy_cycle_best_visualization.png) | ![Nearest Neighbour kroB100](photos/kroB100.tsp_nearest_neighbour_best_visualization.png) | ![Regret Heuristic kroB100](photos/kroB100.tsp_regret_heuristic_best_visualization.png) |
+| kroA100   | ![Greedy Cycle kroA100](photos/kroA100.tsp_greedy_cycle_best_visualization.png) | ![Nearest Neighbour kroA100](photos/kroA100.tsp_nearest_neighbour_best_visualization.png) | ![Regret Heuristic kroA100](photos/kroA100.tsp_regret_heuristic_best_visualization.png) |
 
-![Instancja kroA200 - Greedy Cycle](photos/A_greedy_cycle.png)
-![Instancja kroA200 - Nearest Neighbour](photos/A_nearest_neighbour.png)
-![Instancja kroA200 - Regret Heuristic](photos/A_regret_heuristic.png)
+
 
 ## Wnioski
 
