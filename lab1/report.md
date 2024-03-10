@@ -1,13 +1,14 @@
-# Sprawozdanie z laboratorium Inteligentne Metody Optymalizacji
+## Sprawozdanie z laboratorium nr 1
+# Inteligentne Metody Optymalizacji
 
 Autorzy: Jakub Gołąb, Mariusz Hybiak
 
-## Wprowadzenie
-Celem zadania było zaimplementowanie trzech heurystyk rozwiązujących zmodyfikowany problem komiwojazera. Następnie rozwiązania były oceniane na podstawie instancji z biblioteki TSPLib.
+### Wprowadzenie
+Celem zadania było zaimplementowanie trzech heurystyk rozwiązujących zmodyfikowany problem komiwojażera. Następnie rozwiązania były oceniane na podstawie instancji z biblioteki TSPLib.
 
-## Algorytmy
+### Algorytmy
 
-### Heurystyka najbliższego sąsiada (nearest neighbour)
+#### Heurystyka najbliższego sąsiada (nearest neighbour)
 
 ```pseudocode
 Funkcja nearest_neighbour(macierz_odległości):
@@ -62,7 +63,7 @@ Funkcja nearest_neighbour(macierz_odległości):
     Zwróć parę (cykl1, cykl2)
 ```
 
-### Metoda rozbudowy cyklu (greedy cycle)
+#### Metoda rozbudowy cyklu (greedy cycle)
 
 ```pseudocode
 Funkcja greedy_cycle(macierz_odległości):
@@ -119,7 +120,7 @@ Funkcja greedy_cycle(macierz_odległości):
     Zwróć parę (cykl1, cykl2)
 ```
 
-### Heurystyki zachłanne oparte na żalu (regret heuristics)
+#### Heurystyki zachłanne oparte na żalu (regret heuristics)
 
 ```pseudocode
 Funkcja regret_heuristic(macierz_odległości, k=2):
@@ -188,7 +189,9 @@ Funkcja regret_heuristic(macierz_odległości, k=2):
     Zwróć parę (cykl1, cykl2)
 ```
 
-## Wyniki eksperymentu obliczeniowego
+### Wyniki eksperymentu obliczeniowego
+
+W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instancji problemu.
 
 | Instancja   | Metoda            | Średnia (min – max) [jednostki odległości]    |
 |-------------|-------------------|-----------------------------|
@@ -200,14 +203,14 @@ Funkcja regret_heuristic(macierz_odległości, k=2):
 | kroB100.tsp | 2-Regret          | 31875.11 (30616 – 33923)    |
 
 
-## Wizualizacje najlepszych rozwiązań
+### Wizualizacje najlepszych rozwiązań
 
 | Instancja  | Greedy Cycle | Nearest Neighbour | 2-Regret |
 |-----------|--------------|-------------------|------------------|
 | kroB100   | ![Greedy Cycle kroB100](photos/kroB100.tsp_greedy_cycle_best_visualization.png) | ![Nearest Neighbour kroB100](photos/kroB100.tsp_nearest_neighbour_best_visualization.png) | ![Regret Heuristic kroB100](photos/kroB100.tsp_regret_heuristic_best_visualization.png) |
 | kroA100   | ![Greedy Cycle kroA100](photos/kroA100.tsp_greedy_cycle_best_visualization.png) | ![Nearest Neighbour kroA100](photos/kroA100.tsp_nearest_neighbour_best_visualization.png) | ![Regret Heuristic kroA100](photos/kroA100.tsp_regret_heuristic_best_visualization.png) |
 
-## Pomiary czasu
+### Pomiary czasu
 
 | Instancja | Metoda            | Średnia (min – max) [mikrosekundy]         |
 |-----------|-------------------|-------------------------------|
@@ -218,9 +221,9 @@ Funkcja regret_heuristic(macierz_odległości, k=2):
 | kroB100   | Nearest Neighbour | 7293.5    (6899 – 12841)      |
 | kroB100   | 2-Regret          | 34894.93  (32749 – 46418)     |
 
+<br><br>
 
-
-## Wnioski
+### Wnioski
 
 - Metoda Greedy Cycle okazuje się być najbardziej efektywna pod względem średniej sumy długości cykli w porównaniu do dwóch pozostałych metod dla obu instancji problemu.
 
@@ -232,6 +235,6 @@ Funkcja regret_heuristic(macierz_odległości, k=2):
 
 - Wykonanie metody Greedy Cycle jest znacząco szybsze w porównaniu do dwóch pozostałych metod (Nearest Neighbour i Regret Heuristic) dla obu instancji problemu. Średnie czasy wykonania dla tej metody są bardzo zbliżone między instancjami, co wskazuje na jej stabilność w różnych środowiskach.
 
-## Kod Programu
+### Kod Programu
 
 Kod programu znajduje się pod [tym linkiem](https://github.com/majsterkovic/imo/blob/main/lab1/tsp/main.cpp) w pliku cpp.
