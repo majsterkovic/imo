@@ -8,10 +8,10 @@
 #include <vector>
 #include <sstream>
 #include <random>
-#include <thread>
 #include <climits>
 #include <unordered_set>
 #include <limits>
+#include <set>
 
 // This is a modification of the TSP problem
 // The problem is to find two cycles that cover all the nodes
@@ -58,7 +58,7 @@ long calculate_cycle_length(const std::vector<std::vector<int>>& dist_mat, const
     const int dim = (int) cycle.size();
 
     for (int i = 0; i < dim; i++) {
-        length += dist_mat[cycle[i]][cycle[(i + 1) % dim]];
+        length += dist_mat[cycle[i]-1][cycle[(i + 1) % dim]-1];
     }
 
     return length;
@@ -259,7 +259,7 @@ std::pair<std::vector<int>, std::vector<int>> nearest_neighbour(std::vector<std:
                 min_verticle = i;
             }
         }
-        
+
         cycle2.insert(cycle2.begin() + min_index + 1, min_verticle);
         visited[min_verticle] = true;
     }
@@ -271,117 +271,104 @@ std::pair<std::vector<int>, std::vector<int>> nearest_neighbour(std::vector<std:
     return std::make_pair(cycle1, cycle2);
 }
 
-const int INF = std::numeric_limits<int>::max();
 
-// Function to calculate the total distance of a route
-int calculateTotalDistance(const std::vector<std::vector<int>>& distanceMatrix, const std::vector<int>& route) {
-    int totalDistance = 0;
-    for (int i = 0; i < route.size() - 1; ++i) {
-        totalDistance += distanceMatrix[route[i]][route[i + 1]];
+std::pair<std::vector<int>, std::vector<int>> regret_heuristic(const std::vector<std::vector<int>>& distance_matrix, int k=2) {
+
+    const int dim = (int) distance_matrix.size();
+    int start1 = choose_new_random_node(0, dim, -1);
+    int start2 = choose_new_random_node(0, dim, start1);
+
+    std::set<int> unvisited_cities;
+    for (int i = 0; i < distance_matrix.size(); ++i) {
+        if (i != start1 && i != start2)
+            unvisited_cities.insert(i);
     }
-    totalDistance += distanceMatrix[route.back()][route[0]]; // Return to the starting node
-    return totalDistance;
-}
 
-// Function to calculate the regret for each unvisited node
-std::vector<int> calculateRegret(const std::vector<std::vector<int>>& distanceMatrix, const std::vector<int>& route, int currentNode) {
-    int numNodes = distanceMatrix.size();
-    std::vector<int> regret(numNodes, 0);
+    std::vector<int> cycle1 = {start1, start1};
+    double total_length1 = 0;
 
-    for (int i = 0; i < numNodes; ++i) {
-        if (find(route.begin(), route.end(), i) == route.end()) {
-            std::vector<int> distances;
-            for (int j = 0; j < numNodes; ++j) {
-                if (j != currentNode && find(route.begin(), route.end(), j) != route.end()) {
-                    distances.push_back(distanceMatrix[i][j]);
-                }
+    std::vector<int> cycle2 = {start2, start2};
+    double total_length2 = 0;
+
+    while (cycle1.size() < dim /2) {
+        std::vector<std::tuple<double, int, int, double>> regrets;
+        for (int city : unvisited_cities) {
+            std::vector<std::tuple<double, int>> insertion_data;
+            for (int i = 1; i < cycle1.size(); ++i) {
+                double length = total_length1 - distance_matrix[cycle1[i - 1]][cycle1[i]] +
+                                distance_matrix[cycle1[i - 1]][city] + distance_matrix[city][cycle1[i]];
+                insertion_data.emplace_back(length, i);
             }
-            sort(distances.begin(), distances.end());
-            if (distances.size() >= 2) {
-                regret[i] = distances[1] - distances[0];
+            std::sort(insertion_data.begin(), insertion_data.end(), [](const auto& a, const auto& b) {
+                return std::get<0>(a) < std::get<0>(b);
+            });
+            double regret;
+            double best_length;
+            int best_i;
+            if (insertion_data.size() >= k) {
+                regret = std::get<0>(insertion_data[k - 1]) - std::get<0>(insertion_data[0]);
+                best_length = std::get<0>(insertion_data[0]);
+                best_i = std::get<1>(insertion_data[0]);
+            } else {
+                regret = -std::get<0>(insertion_data[0]);
+                best_length = std::get<0>(insertion_data[0]);
+                best_i = std::get<1>(insertion_data[0]);
             }
-        }
-    }
-    return regret;
-}
-
-// Function to find the next node to visit based on regret values
-int findNextNode(const std::vector<std::vector<int>>& distanceMatrix, const std::vector<int>& route, int currentNode) {
-    int numNodes = distanceMatrix.size();
-    std::vector<int> regret = calculateRegret(distanceMatrix, route, currentNode);
-
-    int maxRegret = -INF;
-    int nextCity = -1;
-
-    for (int i = 0; i < numNodes; ++i) {
-        if (find(route.begin(), route.end(), i) == route.end()) {
-            if (regret[i] > maxRegret) {
-                maxRegret = regret[i];
-                nextCity = i;
-            }
-        }
-    }
-
-    return nextCity;
-}
-
-// Function to solve TSP using 2-regret heuristic
-std::pair<std::vector<int>, std::vector<int>> regret_heuristic(const std::vector<std::vector<int>> &distanceMatrix) {
-    int numNodes = distanceMatrix.size();
-    std::vector<int> route1, route2;
-    route1.push_back(0); // Start the first route from node 0
-
-    // Build a set of visited nodes in the first route
-    std::unordered_set<int> visitedNodes;
-    for (int node : route1) {
-        visitedNodes.insert(node);
-    }
-
-    // Finding the second starting node (closest to the first one but not in the first route)
-    int secondStartNode = -1;
-    int minDistance = INF;
-    for (int i = 1; i < numNodes; ++i) {
-        if (i != 0 && visitedNodes.find(i) == visitedNodes.end()) {
-            if (distanceMatrix[0][i] < minDistance) {
-                minDistance = distanceMatrix[0][i];
-                secondStartNode = i;
-            }
-        }
-    }
-
-    route2.push_back(secondStartNode); // Start the second route from the nearest node not in the first route
-    visitedNodes.insert(secondStartNode); // Mark the second start node as visited
-
-    // Building the first route
-    while (route1.size() < numNodes / 2) {
-        int currentNode = route1.back();
-        int nextNode = findNextNode(distanceMatrix, route1, currentNode);
-        route1.push_back(nextNode);
-        visitedNodes.insert(nextNode); // Mark the visited node
-    }
-
-    // Building the second route
-    while (route2.size() < numNodes / 2) {
-        int currentNode = route2.back();
-        int nextNode = findNextNode(distanceMatrix, route2, currentNode);
-
-        // Check if the next node belongs to the first route, if yes, find the closest unvisited node
-        if (visitedNodes.find(nextNode) != visitedNodes.end()) {
-            nextNode = -1;
-            minDistance = INF;
-            for (int i = 0; i < numNodes; ++i) {
-                if (visitedNodes.find(i) == visitedNodes.end() && distanceMatrix[currentNode][i] < minDistance) {
-                    minDistance = distanceMatrix[currentNode][i];
-                    nextNode = i;
-                }
-            }
+            regrets.emplace_back(regret, city, best_i, best_length);
         }
 
-        route2.push_back(nextNode);
-        visitedNodes.insert(nextNode); // Mark the visited node
+        auto max_regret = std::max_element(regrets.begin(), regrets.end());
+        int best_city = std::get<1>(*max_regret);
+        int best_i = std::get<2>(*max_regret);
+        total_length1 = std::get<3>(*max_regret);
+        cycle1.insert(cycle1.begin() + best_i, best_city);
+        unvisited_cities.erase(best_city);
     }
 
-    return std::make_pair(route1, route2);
+    while (!unvisited_cities.empty()) {
+        std::vector<std::tuple<double, int, int, double>> regrets;
+        for (int city : unvisited_cities) {
+            std::vector<std::tuple<double, int>> insertion_data;
+            for (int i = 1; i < cycle2.size(); ++i) {
+                double length = total_length2 - distance_matrix[cycle2[i - 1]][cycle2[i]] +
+                                distance_matrix[cycle2[i - 1]][city] + distance_matrix[city][cycle2[i]];
+                insertion_data.emplace_back(length, i);
+            }
+            std::sort(insertion_data.begin(), insertion_data.end(), [](const auto& a, const auto& b) {
+                return std::get<0>(a) < std::get<0>(b);
+            });
+            double regret;
+            double best_length;
+            int best_i;
+            if (insertion_data.size() >= k) {
+                regret = std::get<0>(insertion_data[k - 1]) - std::get<0>(insertion_data[0]);
+                best_length = std::get<0>(insertion_data[0]);
+                best_i = std::get<1>(insertion_data[0]);
+            } else {
+                regret = -std::get<0>(insertion_data[0]);
+                best_length = std::get<0>(insertion_data[0]);
+                best_i = std::get<1>(insertion_data[0]);
+            }
+            regrets.emplace_back(regret, city, best_i, best_length);
+        }
+
+        auto max_regret = std::max_element(regrets.begin(), regrets.end());
+        int best_city = std::get<1>(*max_regret);
+        int best_i = std::get<2>(*max_regret);
+        total_length2 = std::get<3>(*max_regret);
+        cycle2.insert(cycle2.begin() + best_i, best_city);
+        unvisited_cities.erase(best_city);
+    }
+
+    for (int i = 0; i < cycle1.size(); ++i) {
+        cycle1[i]++;
+    }
+
+    for (int i = 0; i < cycle2.size(); ++i) {
+        cycle2[i]++;
+    }
+
+    return std::make_pair(cycle1, cycle2);
 }
 
 int main(const int argc, char** argv) {
@@ -436,6 +423,7 @@ int main(const int argc, char** argv) {
 
     std::cout << "Data size: " << data.size() << std::endl;
     std::vector dist_mat = create_distance_matrix(data);
+    std::cout << "Matrix size: " << dist_mat.size() << std::endl;
     std::pair<std::vector<int>, std::vector<int>> c;
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -445,7 +433,7 @@ int main(const int argc, char** argv) {
     } else if (method == "greedy_cycle") {
         c = greedy_cycle(dist_mat);
     } else if (method == "regret_heuristic") {
-        c = regret_heuristic(dist_mat);
+        c = regret_heuristic(dist_mat, 2);
     } else {
         std::cerr << "Invalid method" << std::endl;
     }
@@ -474,22 +462,30 @@ int main(const int argc, char** argv) {
 
     std::cout << std::endl;
 
-    std::ofstream cycle1_file("cycle1.txt");
+    std::cout << "Cycle 1 length: " << calculate_cycle_length(dist_mat, c.first) << std::endl;
+    std::cout << "Cycle 2 length: " << calculate_cycle_length(dist_mat, c.second) << std::endl;
+
+
+    std::ofstream cycle1_file("cycle1_" + method + ".txt", std::ios_base::app);
     if (cycle1_file.is_open()) {
+        cycle1_file << calculate_cycle_length(dist_mat, c.first) << " ";
         for (const auto& elem : c.first) {
             cycle1_file << elem << " ";
         }
+        cycle1_file << std::endl;
         cycle1_file.close();
         std::cout << "Cycle 1 exported to cycle1.txt" << std::endl;
     } else {
         std::cerr << "Unable to open cycle1.txt for export." << std::endl;
     }
 
-    std::ofstream cycle2_file("cycle2.txt");
+    std::ofstream cycle2_file("cycle2_" + method + ".txt", std::ios_base::app);
     if (cycle2_file.is_open()) {
+        cycle2_file << calculate_cycle_length(dist_mat, c.second) << " ";
         for (const auto& elem : c.second) {
             cycle2_file << elem << " ";
         }
+        cycle2_file << std::endl;
         cycle2_file.close();
         std::cout << "Cycle 2 exported to cycle2.txt" << std::endl;
     } else {
