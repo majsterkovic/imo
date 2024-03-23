@@ -39,7 +39,7 @@ public:
     static std::vector<int> reverse_cycle(std::vector<int> vec, int start, int end);
     static std::vector<int> swap_nodes(std::vector<int> init, int pos_start, int pos_end);
 
-    static std::map<int, std::pair<int, int> > read_data(const std::string &filename);
+    static std::map<int, std::pair<int, int> > read_data(std::string filename);
 };
 
 

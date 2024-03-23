@@ -85,24 +85,20 @@ void Utils::incrementVectors(std::vector<int>& cycle1, std::vector<int>& cycle2)
 }
 
 std::pair<std::vector<int>, std::vector<int> > Utils::random_cycles(std::vector<std::vector<int> > &dist_mat) {
-    std::vector<int> cycle1;
-    std::vector<int> cycle2;
 
     const int dim = (int) dist_mat.size();
 
-    for (int i = 0; i < dim/2; ++i) {
-        cycle1.push_back(i+1);
-    }
-
-    for (int i = (int) dim/2; i < dim; ++i) {
-        cycle2.push_back(i+1);
-    }
+    std::vector<int> vertices(dim);
+    std::iota(vertices.begin(), vertices.end(), 0); // Uzupełnianie wektora wartościami od 0 do dim-1
 
     std::random_device rd;
     std::mt19937 g(rd());
+    std::shuffle(vertices.begin(), vertices.end(), g);
 
-    std::shuffle(cycle1.begin(), cycle1.end(), g);
-    std::shuffle(cycle2.begin(), cycle2.end(), g);
+    std::vector<int> cycle1(vertices.begin(), vertices.begin() + dim / 2);
+    std::vector<int> cycle2(vertices.begin() + dim / 2, vertices.end());
+
+    incrementVectors(cycle1, cycle2);
 
     return std::make_pair(cycle1, cycle2);
 }
@@ -123,13 +119,14 @@ std::vector<int> Utils::reverse_cycle(std::vector<int> vec, int start, int end) 
     return vec;
 }
 
-std::vector<int> Utils::swap_nodes(std::vector<int> init, int pos_start, int pos_end) {
-    std::iter_swap(init.begin()+pos_start, init.begin()+pos_end);
+std::vector<int> Utils::swap_nodes(std::vector<int> init, int pos_a, int pos_b) {
+    std::iter_swap(init.begin()+pos_a, init.begin()+pos_b);
     return init;
 }
 
-std::map<int, std::pair<int, int> > Utils::read_data(const std::string &filename) {
+std::map<int, std::pair<int, int> > Utils::read_data(std::string filename) {
 
+    filename = filename + ".tsp";
     std::ifstream file(filename);
     std::string line;
     std::map<int, std::pair<int, int> > data;
@@ -154,6 +151,8 @@ std::map<int, std::pair<int, int> > Utils::read_data(const std::string &filename
     }
 
     std::cout << "Data read successfully" << std::endl;
-    std::cout << "Data size: " << data.size() << std::endl;
+    if (data.empty()) {
+        std::cerr << "Data is empty" << std::endl;
+    }
     return data;
 }
