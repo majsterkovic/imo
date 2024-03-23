@@ -4,7 +4,7 @@
 
 #include "Utils.h"
 
-std::vector<std::vector<int> > Utils::create_distance_matrix(const std::map<int, std::pair<int, int> >& data) {
+std::vector<std::vector<int> > Utils::create_distance_matrix(const std::map<int, std::pair<int, int> > &data) {
     const int dim = (int) data.size();
     std::vector<std::vector<int>> distance_matrix(dim, std::vector<int>(dim, 0));
 
@@ -23,22 +23,22 @@ std::vector<std::vector<int> > Utils::create_distance_matrix(const std::map<int,
     return distance_matrix;
 }
 
-void Utils::print_matrix(const std::vector<std::vector<int> >& matrix) {
+void Utils::print_matrix(const std::vector<std::vector<int> > &matrix) {
 
-    for (const auto& row : matrix) {
-        for (const auto& elem : row) {
+    for (const auto &row: matrix) {
+        for (const auto &elem: row) {
             std::cout << elem << " ";
         }
         std::cout << std::endl;
     }
 }
 
-long Utils::calculate_cycle_length(const std::vector<std::vector<int> >& dist_mat, const std::vector<int>& cycle) {
+long Utils::calculate_cycle_length(const std::vector<std::vector<int> > &dist_mat, const std::vector<int> &cycle) {
     long length = 0;
     const int dim = (int) cycle.size();
 
     for (int i = 0; i < dim; i++) {
-        length += dist_mat[cycle[i]-1][cycle[(i + 1) % dim]-1];
+        length += dist_mat[cycle[i] - 1][cycle[(i + 1) % dim] - 1];
     }
     return length;
 }
@@ -50,4 +50,110 @@ int Utils::choose_random_node(const int from, const int to) {
     std::uniform_int_distribution<> distr(from, to - 1);
 
     return distr(gen);
+}
+
+int Utils::choose_new_random_node(const int from, const int to, const int old) {
+
+    int new_random = old;
+    while (new_random == old) {
+        new_random = Utils::choose_random_node(from, to);
+    }
+
+    return new_random;
+}
+
+std::pair<int, int> Utils::choose_nearest_neighbour(const std::vector<std::vector<int>>& dist_mat, const int current_node, const std::vector<bool>& visited) {
+
+    int distance = INT_MAX;
+    int index = -1;
+
+    for(int i = 0; i < dist_mat.size(); i++) {
+        if (!visited[i]) {
+            if (i != current_node && dist_mat[current_node][i] < distance) {
+                distance = dist_mat[current_node][i];
+                index = i;
+            }
+        }
+    }
+
+    return std::make_pair(index, distance);
+}
+
+void Utils::incrementVectors(std::vector<int>& cycle1, std::vector<int>& cycle2) {
+    std::transform(cycle1.begin(), cycle1.end(), cycle1.begin(), [](int v) { return v + 1; });
+    std::transform(cycle2.begin(), cycle2.end(), cycle2.begin(), [](int v) { return v + 1; });
+}
+
+std::pair<std::vector<int>, std::vector<int> > Utils::random_cycles(std::vector<std::vector<int> > &dist_mat) {
+    std::vector<int> cycle1;
+    std::vector<int> cycle2;
+
+    const int dim = (int) dist_mat.size();
+
+    for (int i = 0; i < dim/2; ++i) {
+        cycle1.push_back(i+1);
+    }
+
+    for (int i = (int) dim/2; i < dim; ++i) {
+        cycle2.push_back(i+1);
+    }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    std::shuffle(cycle1.begin(), cycle1.end(), g);
+    std::shuffle(cycle2.begin(), cycle2.end(), g);
+
+    return std::make_pair(cycle1, cycle2);
+}
+
+std::vector<int> Utils::reverse_cycle(std::vector<int> vec, int start, int end) {
+
+    int size = (int) vec.size();
+
+    start = (start + size) % size;
+    end = (end + size) % size;
+
+    if (start > end) {
+        std::swap(start, end);
+    }
+
+    std::reverse(vec.begin() + start, vec.begin() + end + 1);
+
+    return vec;
+}
+
+std::vector<int> Utils::swap_nodes(std::vector<int> init, int pos_start, int pos_end) {
+    std::iter_swap(init.begin()+pos_start, init.begin()+pos_end);
+    return init;
+}
+
+std::map<int, std::pair<int, int> > Utils::read_data(const std::string &filename) {
+
+    std::ifstream file(filename);
+    std::string line;
+    std::map<int, std::pair<int, int> > data;
+
+    while (std::getline(file, line)) {
+        if (line.find("NODE_COORD_SECTION") != std::string::npos) {
+            while (std::getline(file, line)) {
+
+                if (line.find("EOF") != std::string::npos) {
+                    break;
+                }
+
+                int id, x, y;
+                if (std::istringstream iss(line); !(iss >> id >> x >> y)) {
+                    std::cout << "Error reading file" << std::endl;
+                    break;
+                }
+
+                data[id] = std::make_pair(x, y);
+            }
+        }
+    }
+
+    std::cout << "Data read successfully" << std::endl;
+    std::cout << "Data size: " << data.size() << std::endl;
+    return data;
 }
