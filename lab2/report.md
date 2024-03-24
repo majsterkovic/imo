@@ -110,22 +110,24 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 
 | Instancja   | Metoda            | Średnia (min – max) [jednostki odległości]    |
 |-------------|-------------------|-----------------------------|
-| kroA100 | steepest inner random | 33851.17 (31816 - 36246) |
-| kroA100 | steepest inner heuristic | 26812.36 (23904 - 30188) |
-| kroA100 | steepest between random | 52910.15 (41042 - 67550) |
-| kroA100 | steepest between heuristic | 31630.19 (28769 - 35170) |
-| kroA100 | greedy inner random | 34417.8 (30801 - 38255) |
-| kroA100 | greedy inner heuristic | 27258.43 (23463 - 29234) |
-| kroA100 | greedy between random | 43123.97 (36266 - 54241) |
-| kroA100 | greedy between heuristic | 31974.89 (29382 - 34758) |
-| kroB100 | steepest inner random | 34262.46 (31783 - 36894) |
-| kroB100 | steepest inner heuristic | 25954.37 (22611 - 29852) |
-| kroB100 | steepest between random | 51914.82 (41791 - 65046) |
-| kroB100 | steepest between heuristic | 31597.95 (28709 - 33634) |
-| kroB100 | greedy inner random | 34650.79 (31962 - 37520) |
-| kroB100 | greedy inner heuristic | 26111.22 (23123 - 30336) |
-| kroB100 | greedy between random | 43749.95 (35753 - 56861) |
-| kroB100 | greedy between heuristic | 31697.67 (28759 - 34261) |
+| kroA100 | steepest inner random | 33850.48 (30748 - 37235) |
+| kroA100 | steepest inner heuristic | 26816.29 (23281 - 30188) |
+| kroA100 | steepest between random | 52106.15 (38477 - 65723) |
+| kroA100 | steepest between heuristic | 31614.32 (28693 - 35183) |
+| kroA100 | greedy inner random | 34626.56 (32004 - 37591) |
+| kroA100 | greedy inner heuristic | 27355.74 (23205 - 30087) |
+| kroA100 | greedy between random | 43523.76 (34830 - 55226) |
+| kroA100 | greedy between heuristic | 31979.32 (28842 - 35430) |
+| kroA100 | random inner heuristic | 137510.65 (105824 - 181527) |
+| kroB100 | steepest inner random | 34322.2 (31362 - 37957) |
+| kroB100 | steepest inner heuristic | 25734.14 (22611 - 28522) |
+| kroB100 | steepest between random | 51643.1 (42161 - 63426) |
+| kroB100 | steepest between heuristic | 31399.98 (28593 - 34053) |
+| kroB100 | greedy inner random | 34657.0 (32734 - 37167) |
+| kroB100 | greedy inner heuristic | 26065.38 (23122 - 30020) |
+| kroB100 | greedy between random | 43828.14 (36308 - 56298) |
+| kroB100 | greedy between heuristic | 31769.62 (29087 - 34343) |
+| kroB100 | random inner heuristic | 132748.42 (99536 - 171747) |
 
 
 ### Wizualizacje najlepszych rozwiązań
@@ -140,6 +142,7 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 | greedy inner heuristic | ![greedy_inner_heuristic_A](local-search/plots/kroA100_greedy_inner_heuristic.png) | ![greedy_inner_heuristic_B](local-search/plots/kroB100_greedy_inner_heuristic.png) |
 | greedy between random | ![greedy_between_random_A](local-search/plots/kroA100_greedy_between_random.png) | ![greedy_between_random_B](local-search/plots/kroB100_greedy_between_random.png) |
 | greedy between heuristic | ![greedy_between_heuristic_A](local-search/plots/kroA100_greedy_between_heuristic.png) | ![greedy_between_heuristic_B](local-search/plots/kroB100_greedy_between_heuristic.png) |
+| random inner heuristic | ![random_inner_heuristic_A](local-search/plots/kroA100_random_inner_heuristic.png) | ![random_inner_heuristic_B](local-search/plots/kroB100_random_inner_heuristic.png) |
 
 
 ### Wnioski

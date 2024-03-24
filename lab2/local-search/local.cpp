@@ -520,4 +520,3 @@ std::pair<std::vector<int>, std::vector<int>> local::random_search(std::vector<i
 
     return std::make_pair(new_cycle_1, new_cycle_2);
 }
-

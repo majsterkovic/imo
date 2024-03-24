@@ -37,3 +37,11 @@ for instance in "${instances[@]}"; do
         done
     done
 done
+
+for instance in "${instances[@]}"; do
+  for beginning in "${beginning[@]}"; do
+    for (( run=1; run<=100; run++ )); do
+      ./local_search "$instance" "random" "inner" "$beginning" "$run"
+    done
+  done
+done

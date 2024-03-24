@@ -33,8 +33,6 @@ public:
 
     static std::pair<std::vector<int>, std::vector<int>> random_search(std::vector<int> &cycle_1, std::vector<int> &cycle_2, std::vector<std::vector<int> > &dist_mat, int time_limit=100000);
 
-
-
 };
 
 
