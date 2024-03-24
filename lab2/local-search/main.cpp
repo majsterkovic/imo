@@ -29,6 +29,8 @@ wymiana dwóch krawędzi (odwrócenie podciągu o długości co najmniej 2 ale c
 
 #include "Utils.h"
 #include "greedy.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #define REVERSE_SUBSEQUENCE 0
 #define SWAP_NODES 1
@@ -565,7 +567,7 @@ int main(const int argc, char** argv) {
         beginning = argv[4];
         run_nr = std::stoi(argv[5]);
     } else {
-        instance = "kroA100";
+        instance = "kroB100";
         method = "steepest";
         neighbourhood = "inner";
         beginning = "random";
@@ -606,8 +608,19 @@ int main(const int argc, char** argv) {
     int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);
     int length_after = Utils::calculate_cycle_length(dist_mat, c.first) + Utils::calculate_cycle_length(dist_mat, c.second);
 
-    std::string output = "output/" + method + "_" + neighbourhood + "_" + beginning + "_" + instance + ".txt";
-    std::ofstream cycle_file(output);
+    std::string directoryPath = "output/" + method + "/" + neighbourhood + "/" + beginning;
+    std::string fileName = instance + ".txt";
+
+    fs::path filePath = fs::path(directoryPath) / fileName;
+
+    if (!fs::exists(directoryPath)) {
+        fs::create_directories(filePath.parent_path());
+    }
+
+    std::cout << "Ścieżka docelowa: " << filePath << std::endl;
+
+
+    std::ofstream cycle_file(filePath, std::ios::app);
 
     if (cycle_file.is_open()) {
 

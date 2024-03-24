@@ -126,7 +126,7 @@ std::vector<int> Utils::swap_nodes(std::vector<int> init, int pos_a, int pos_b) 
 
 std::map<int, std::pair<int, int> > Utils::read_data(std::string filename) {
 
-    filename = filename + ".tsp";
+    filename = "../" + filename + ".tsp";
     std::ifstream file(filename);
     std::string line;
     std::map<int, std::pair<int, int> > data;

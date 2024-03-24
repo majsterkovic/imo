@@ -3,6 +3,8 @@
 
 # Usuń poprzedni katalog build i utwórz go na nowo
 rm -rf build
+rm -rf output
+
 mkdir build
 cd build || exit
 
@@ -28,8 +30,8 @@ for instance in "${instances[@]}"; do
     for method in "${methods[@]}"; do
         for neighbourhood in "${neighbourhoods[@]}"; do
             for beginning in "${beginnings[@]}"; do
-                for (( run=1; run<=2; run++ )); do
-                    ./local_search ../"$instance" "$method" "$neighbourhood" "$beginning" "$run"
+                for (( run=1; run<=100; run++ )); do
+                    ./local_search "$instance" "$method" "$neighbourhood" "$beginning" "$run"
                 done
             done
         done
