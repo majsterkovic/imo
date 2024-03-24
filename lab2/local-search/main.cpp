@@ -25,7 +25,7 @@ wymiana dwóch krawędzi (odwrócenie podciągu o długości co najmniej 2 ale c
 1 2 6 5 4 3 7 8 9
  */
 
-#include <pstl/parallel_backend_utils.h>
+//#include <pstl/parallel_backend_utils.h>
 
 #include "Utils.h"
 #include "greedy.h"
