@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+
 
 /*
  Zadanie polega na implementacji lokalnego przeszukiwania w wersjach stromej (steepest) i
@@ -26,20 +25,111 @@ wymiana dwóch krawędzi (odwrócenie podciągu o długości co najmniej 2 ale c
 1 2 6 5 4 3 7 8 9
  */
 
-void local_search_steepest() {
+//#include <pstl/parallel_backend_utils.h>
 
-}
-
-void local_search_greedy(std::vector<int> starting_cycle) {
-
-    // Wygeneruj wszystkie możliwe wymiany wierzchołków i wymiany krawędzi
-    // Oceń ruch, jeżeli jest lepszy niż stan aktualny, to go zastosuj
-
-}
+#include "Utils.h"
+#include "greedy.h"
+#include "local.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+
+
+int main(const int argc, char** argv) {
+    std::string instance; // kroA100.tsp kroB100.tsp
+    std::string method; // steepest greedy
+    std::string neighbourhood; // inner between
+    std::string beginning; // random heuristic
+    int run_nr;
+
+    if (argc > 5) {
+        instance = argv[1];
+        method = argv[2];
+        neighbourhood = argv[3];
+        beginning = argv[4];
+        run_nr = std::stoi(argv[5]);
+    } else {
+        instance = "kroB100";
+        method = "steepest";
+        neighbourhood = "inner";
+        beginning = "random";
+        run_nr = 1;
+        std::cerr << "Invalid number of arguments" << std::endl;
+    }
+
+
+    std::map<int, std::pair<int, int> > data = Utils::read_data(instance);
+    std::vector<std::vector<int> > dist_mat = Utils::create_distance_matrix(data);
+
+    std::pair<std::vector<int>, std::vector<int>> cycles;
+    std::pair<std::vector<int>, std::vector<int>> c;
+
+
+    if (beginning == "random") {
+        cycles = Utils::random_cycles(dist_mat);
+    } else if (beginning == "heuristic") {
+        cycles = greedy::nearest_neighbour(dist_mat);
+    }
+
+    if (method == "steepest" && neighbourhood == "inner") {
+        c = local::local_search_steepest_inner(cycles.first, cycles.second, dist_mat);
+
+    } else if (method == "steepest" && neighbourhood == "between") {
+        c = local::local_search_steepest_between(cycles.first, cycles.second, dist_mat);
+
+    } else if (method == "greedy" && neighbourhood == "inner") {
+        c = local::local_search_greedy_inner(cycles.first, cycles.second, dist_mat);
+
+    } else if (method == "greedy" && neighbourhood == "between") {
+        c = local::local_search_greedy_between(cycles.first, cycles.second, dist_mat);
+
+    } else if (method == "random") {
+        c = local::random_search(cycles.first, cycles.second, dist_mat);
+    }
+
+    int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);
+    int length_after = Utils::calculate_cycle_length(dist_mat, c.first) + Utils::calculate_cycle_length(dist_mat, c.second);
+
+    std::string directoryPath = "output/" + method + "/" + neighbourhood + "/" + beginning;
+    std::string fileName = instance + ".txt";
+
+    fs::path filePath = fs::path(directoryPath) / fileName;
+
+    if (!fs::exists(directoryPath)) {
+        fs::create_directories(filePath.parent_path());
+    }
+
+    std::cout << "Ścieżka docelowa: " << filePath << std::endl;
+
+
+    std::ofstream cycle_file(filePath, std::ios::app);
+
+    if (cycle_file.is_open()) {
+
+        cycle_file << run_nr << ": ";
+        cycle_file << length_after << " ";
+
+        for (const auto& elem : c.first) {
+            cycle_file << elem << " ";
+        }
+
+        cycle_file << std::endl;
+
+        cycle_file << run_nr << ": ";
+        cycle_file << length_after << " ";
+
+        for (const auto& elem : c.second) {
+            cycle_file << elem << " ";
+        }
+
+        cycle_file << std::endl;
+        cycle_file.close();
+
+        std::cout << "Cycle exported" << std::endl;
+    } else {
+        std::cerr << "Unable to open for export." << std::endl;
+    }
+
 
 }
