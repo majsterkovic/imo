@@ -51,7 +51,7 @@ int main(const int argc, char** argv) {
         instance = "kroB100";
         method = "steepest";
         neighbourhood = "inner";
-        beginning = "heuristic";
+        beginning = "random";
         run_nr = 1;
         std::cerr << "Invalid number of arguments" << std::endl;
     }
@@ -80,7 +80,7 @@ int main(const int argc, char** argv) {
     std::cout << length_before << std::endl;
     std::cout << length_after << std::endl;
 
-    local_optim::cache_algorithm(cycles.first, cycles.second, dist_mat);
+
 
 //
 //    int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);

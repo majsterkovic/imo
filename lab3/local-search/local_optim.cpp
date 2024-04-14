@@ -225,8 +225,8 @@ local_optim::generate_init_moves(const std::vector<int> &cycle1, const std::vect
 void print_move(local_optim::move m) {
     std::cout << "Type: " << m.type << std::endl;
     std::cout << "Data: ";
-    for (int i = 0; i < m.data.size(); i++) {
-        std::cout << m.data[i] << " ";
+    for (int i : m.data) {
+        std::cout << i << " ";
     }
     std::cout << std::endl;
 }
@@ -308,10 +308,9 @@ std::pair<std::vector<int>, std::vector<int> > apply_move(const local_optim::mov
             }
 
         }
-            // Dodaj tutaj inne typy ruchów, jeśli są używane
         default:
-            // Nieznany typ ruchu
-            break;
+            return std::make_pair(cycle_1, cycle_2);
+
     }
 }
 
@@ -322,7 +321,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
 
     for (int &node: cycle_2) { node--; }
 
-    std::vector<move> moves = generate_init_moves(cycle_1, cycle_2, dist_mat);
+    std::vector<move> new_moves = generate_init_moves(cycle_1, cycle_2, dist_mat);
 
         while(true) {
 
@@ -331,9 +330,9 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
             int cycle_index = 0;
             best_move.score = 0;
 
-            for (move &m: moves) {
+            for (move &m: new_moves) {
                 int type = m.type;
-                //print_move(m);
+                print_move(m);
                 if (type == SWAP_EDGE) {
                     std::vector<int> edges = m.data;
                     std::vector<int> reversed_edges = {edges[1], edges[0], edges[3], edges[2]};
@@ -342,25 +341,28 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
                         to_delete.push_back(m);
                         best_move = m;
                         cycle_index = 1;
+                        break;
                     }
 
                     else if (has_edges(cycle_2, edges)) {
                         to_delete.push_back(m);
                         best_move = m;
                         cycle_index = 2;
+                        break;
                     }
 
-
-                    if (has_edges(cycle_1, reversed_edges) )
+                    else if (has_edges(cycle_1, reversed_edges) )
                     {
                         to_delete.push_back(m);
                         best_move = m;
                         cycle_index = 1;
+                        break;
                     }
                     else if (has_edges(cycle_2, reversed_edges)) {
                         to_delete.push_back(m);
                         best_move = m;
                         cycle_index = 2;
+                        break;
                     }
 
                     else {
@@ -376,6 +378,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
                     if (has_edges(cycle_1, first_cycle_edges) && has_edges(cycle_2, second_cycle_edges)) {
                         to_delete.push_back(m);
                         best_move = m;
+                        break;
                     } else {
                         to_delete.push_back(m);
                         break;
@@ -387,7 +390,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
                 break;
             }
 
-            remove_moves(moves, to_delete);
+            remove_moves(new_moves, to_delete);
             std::pair new_cycles = apply_move(best_move, cycle_1, cycle_2, cycle_index);
 
             // add new moves...
@@ -395,9 +398,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
             cycle_1 = new_cycles.first;
             cycle_2 = new_cycles.second;
 
-
     }
-
 
     Utils::incrementVectors(cycle_1, cycle_2);
     return std::make_pair(cycle_1, cycle_2);
