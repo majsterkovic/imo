@@ -34,7 +34,25 @@ candidate_moves_algorithm(cycle1, cycle2, dist_mat, k):
 ```
 
 ```pseudocode
-\\ algorytm oparty o oceny ruchów z poprzednich iteracji
+// algorytm oparty o oceny ruchów z poprzednich iteracji
+
+Wygeneruj rozwiązanie startowe
+
+Zainicjuj listę LM ruchów przynoszących poprawę
+Dodaj do listy ruchów wszystkie międzytrasowe wymiany wierzchołków i wewnątrztrasowe wymiany krawędzi przynoszące poprawę
+Posortuj listę
+
+powtarzaj
+	Przeglądaj ruchy m z LM od najlepszego do znalezienia aplikowalnego ruchu
+	Jeżeli ruch jest aplikowalny, to zapamiętaj go
+	W przeciwnym wypadku usuń
+
+	Jeżeli znaleziono aplikowalny ruch M to
+	Zaaplikuj ruch M
+	Dodaj do LM nowe ruchy i posortuj listę
+dopóki nie znaleziono aplikowalnego ruchu M po przejrzeniu całej listy LM
+
+Zwróć zmodyfikowane rozwiązanie
 ```
 
 ### Wyniki eksperymentu obliczeniowego
