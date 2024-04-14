@@ -20,28 +20,13 @@ if [ ! -f "local_search" ]; then
 fi
 
 # Tablice z parametrami
-instances=("kroA100" "kroB100")
+instances=("kroA200" "kroB200")
 methods=("steepest" "greedy")
 neighbourhoods=("inner" "between")
 beginnings=("random" "heuristic")
 
-# Uruchom program w pętli dla każdej kombinacji parametrów
 for instance in "${instances[@]}"; do
-    for method in "${methods[@]}"; do
-        for neighbourhood in "${neighbourhoods[@]}"; do
-            for beginning in "${beginnings[@]}"; do
-                for (( run=1; run<=100; run++ )); do
-                    ./local_search "$instance" "$method" "$neighbourhood" "$beginning" "$run"
-                done
-            done
-        done
-    done
-done
-
-for instance in "${instances[@]}"; do
-  for beginning in "${beginning[@]}"; do
-    for (( run=1; run<=100; run++ )); do
-      ./local_search "$instance" "random" "inner" "$beginning" "$run"
-    done
+  for (( run=1; run<=10; run++ )); do
+    ./local_search "$instance" "random" "inner" "random" "$run"
   done
 done

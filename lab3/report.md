@@ -1,107 +1,40 @@
-## Sprawozdanie z laboratorium nr 2
+## Sprawozdanie z laboratorium nr 3
 # Inteligentne Metody Optymalizacji
 
 Autorzy: Jakub Gołąb, Mariusz Hybiak
 
 ### Wprowadzenie
-Celem zadania była implementacja algorytmów lokalnego przeszukiwania w wersjach stromej (steepest) i zachłannej (greedy), z dwoma różnym rodzajami sąsiedztwa, starując albo z rozwiązań losowych, albo z rozwiązań uzyskanych za pomocą jednej z heurystyk opracowanych w ramach poprzedniego zadania.
+Celem zadania była poprawa efektywności algorytmów lokalnego przeszukiwania z poprzedniego zadania. W celu poprawy efektywności czasowe wykorzystano oceny ruchów z poprzednich iteracji i ruchów kandydackich.
 
 ### Algorytmy
 ```pseudocode
-// Generowanie wszystkich możliwych ruchów w ramach pojedynczego cyklu
-generate_intra_route_inner(cycle):
-    moves = pusta lista
-    cycle_size = rozmiar(cycle)
-
-    // Generowanie ruchów odwracających podciągi
-    dla i od 0 do cycle_size-1:
-        dla j od i+1 do cycle_size:
-            dodaj (REVERSE_SUBSEQUENCE, (i, j)) do moves
-
-    // Generowanie ruchów zamieniających wierzchołki
-    dla i od 2 do cycle_size-2:
-        dla j od 0 do cycle_size:
-            dodaj (SWAP_NODES, (j, (j+i) % cycle_size)) do moves
-
-    // Losowe przemieszanie listy ruchów
-    przemieszaj moves
-
-    zwróć moves
+// Algorytm oparty o ruchy kandydackie
+candidate_moves_algorithm(cycle1, cycle2, dist_mat, k):
+    k_closest_set = compute_closest_cities(dist_mat, k)
+    while true
+        best_delta = 0
+        best_move = NULL
+        for node_a in all_cities:
+            for node_b in k_closest_set[node_a]:
+                c1, pos1 = find(node_a, cycle1, cycle2)
+                c2, pos2 = find(node_b, cycle1, cycle2)
+                if c1 == c2:
+                    move = swap_edge(node_a, succesor(node_a)) + swap_edge(node_b, succesor(node_b))
+                else
+                    move = swap_nodes(node_a, node_b)
+                delta = compute_delta(move)
+                if delta > best_delta:
+                    best_delta = delta
+                    best_move = move
+        if best_move is NULL:
+            break
+        apply_move(best_move)
+        
+    return (cycle1, cycle2)
 ```
 
 ```pseudocode
-// Lokalne przeszukiwanie metodą stromą w ramach pojedynczego cyklu
-local_search_steepest_inner_cycle(starting_cycle, dist_mat):
-    moves = generate_intra_route_inner(starting_cycle)
-    tmp_cycle = kopia starting_cycle
-    best_index = -1
-    best_value = 0
-
-    while true:
-        best_index = -1
-        best_value = 0
-
-        // Dla każdego ruchu z listy ruchów
-        dla każdego i od 0 do rozmiar(moves)-1:
-            move = moves[i]
-            node1 = move.pierwszy_cykl
-            node2 = move.drugi_cykl
-            type = move.typ_ruchu
-
-            // Obliczanie nowego cyklu i wartości zmiany
-            jeżeli type == REVERSE_SUBSEQUENCE:
-                tmp_cycle = odwróć_podciąg(starting_cycle, node1, node2)
-                delta = oblicz_delte(starting_cycle, tmp_cycle)
-            jeżeli type == SWAP_NODES:
-                tmp_cycle = zamień_wierzchołki(starting_cycle, node1, node2)
-                delta = oblicz_delte(starting_cycle, tmp_cycle)
-            // Jeżeli wartość zmiany jest większa od najlepszej wartości dotychczas
-            jeżeli delta > best_value:
-                best_value = delta
-                best_index = i
-
-        // Jeżeli istnieje lepszy ruch, zastosuj go
-        jeżeli best_value > 0:
-            move = moves[best_index]
-            zastosuj move
-            del(moves[best_index])
-        w przeciwnym razie:
-            przerwij pętlę
-
-    zwróć starting_cycle
-```
-
-```pseudocode
-local_search_greedy_inner_cycle(starting_cycle, dist_mat):
-    moves = generate_intra_route_inner(starting_cycle)
-    tmp_cycle = kopia starting_cycle
-    best_index = -1
-    best_value = 0
-
-    // Losowe przemieszanie listy ruchów
-    przemieszaj moves
-
-    // Dla każdego ruchu z listy ruchów
-    dla każdego i od 0 do rozmiar(moves)-1:
-        move = moves[i]
-        node1 = move.drugi.pierwszy
-        node2 = move.drugi.drugi
-        type = move.pierwszy
-
-        // Obliczanie nowego cyklu i wartości zmiany
-        jeżeli type == REVERSE_SUBSEQUENCE:
-            tmp_cycle = odwróć_podciąg(starting_cycle, node1, node2)
-            delta = oblicz_delte(starting_cycle, tmp_cycle)
-        jeżeli type == SWAP_NODES:
-            tmp_cycle = zamień_wierzchołki(starting_cycle, node1, node2)
-            delta = oblicz_delte(starting_cycle, tmp_cycle)
-        // Jeżeli wartość zmiany jest większa od najlepszej wartości dotychczas
-        jeżeli delta > best_value:
-            best_value = delta
-            best_index = i
-            zastosuj ruch move
-
-    zwróć starting_cycle
+\\ algorytm oparty o oceny ruchów z poprzednich iteracji
 ```
 
 ### Wyniki eksperymentu obliczeniowego
@@ -110,48 +43,51 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 
 | Instancja   | Metoda            | Średnia (min – max) [jednostki odległości]    |
 |-------------|-------------------|-----------------------------|
-| kroA100 | steepest inner random | 33850.48 (30748 - 37235) |
-| kroA100 | steepest inner heuristic | 26816.29 (23281 - 30188) |
-| kroA100 | steepest between random | 52106.15 (38477 - 65723) |
-| kroA100 | steepest between heuristic | 31614.32 (28693 - 35183) |
-| kroA100 | greedy inner random | 34626.56 (32004 - 37591) |
-| kroA100 | greedy inner heuristic | 27355.74 (23205 - 30087) |
-| kroA100 | greedy between random | 43523.76 (34830 - 55226) |
-| kroA100 | greedy between heuristic | 31979.32 (28842 - 35430) |
-| kroA100 | random inner heuristic | 137510.65 (105824 - 181527) |
-| kroB100 | steepest inner random | 34322.2 (31362 - 37957) |
-| kroB100 | steepest inner heuristic | 25734.14 (22611 - 28522) |
-| kroB100 | steepest between random | 51643.1 (42161 - 63426) |
-| kroB100 | steepest between heuristic | 31399.98 (28593 - 34053) |
-| kroB100 | greedy inner random | 34657.0 (32734 - 37167) |
-| kroB100 | greedy inner heuristic | 26065.38 (23122 - 30020) |
-| kroB100 | greedy between random | 43828.14 (36308 - 56298) |
-| kroB100 | greedy between heuristic | 31769.62 (29087 - 34343) |
-| kroB100 | random inner heuristic | 132748.42 (99536 - 171747) |
+| kroA200 | random | 343397.4 (325622 - 367592) |
+| kroA200 | heuristic | 42647.1 (41003 - 43990) |
+| kroA200 | local_search_steepest | 84107.5 (73714 - 103386) |
+| kroA200 | candidate_moves | 119163.6 (97614 - 136954) |
+| kroA200 | cache_moves | 335248.9 (306820 - 353120) |
+| kroB200 | random | 337828.5 (326222 - 361247) |
+| kroB200 | heuristic | 42083.0 (40871 - 43710) |
+| kroB200 | local_search_steepest | 81853.3 (74057 - 88471) |
+| kroB200 | candidate_moves | 134144.1 (109662 - 169742) |
+| kroB200 | cache_moves | 335300.5 (310480 - 352315) |
+
+
+### Czas działania algorytmu
+
+W tabeli przedstawiono średni czas działania algorytmu.
+
+| Instancja   | Metoda            | Średnia (min – max) [milisekundy] |
+|-------------|-------------------|-----------------------------------|
+| kroA200 | heuristic | 276280.9 (257958 - 369437) |
+| kroA200 | local_search_steepest | 25743204.7 (19735387 - 29716978) |
+| kroA200 | candidate_moves | 3738071.4 (2645683 - 5224432) |
+| kroA200 | cache_moves | 110838.1 (72426 - 199158) |
+| kroB200 | heuristic | 267744.6 (260291 - 311365) |
+| kroB200 | local_search_steepest | 26044757.9 (19782866 - 32359997) |
+| kroB200 | candidate_moves | 3275410.4 (2526119 - 4147063) |
+| kroB200 | cache_moves | 87820.4 (64392 - 115929) |
 
 
 ### Wizualizacje najlepszych rozwiązań
 
 | Metoda |  KroA100 |   KroB100 |
 |--------|----------|-----------|
-| steepest inner random | ![steepest_inner_random_A](local-search/plots/kroA100_steepest_inner_random.png) | ![steepest_inner_random_B](local-search/plots/kroB100_steepest_inner_random.png) |
-| steepest inner heuristic | ![steepest_inner_heuristic_A](local-search/plots/kroA100_steepest_inner_heuristic.png) | ![steepest_inner_heuristic_B](local-search/plots/kroB100_steepest_inner_heuristic.png) |
-| steepest between random | ![steepest_between_random_A](local-search/plots/kroA100_steepest_between_random.png) | ![steepest_between_random_B](local-search/plots/kroB100_steepest_between_random.png) |
-| steepest between heuristic | ![steepest_between_heuristic_A](local-search/plots/kroA100_steepest_between_heuristic.png) | ![steepest_between_heuristic_B](local-search/plots/kroB100_steepest_between_heuristic.png) |
-| greedy inner random | ![greedy_inner_random_A](local-search/plots/kroA100_greedy_inner_random.png) | ![greedy_inner_random_B](local-search/plots/kroB100_greedy_inner_random.png) |
-| greedy inner heuristic | ![greedy_inner_heuristic_A](local-search/plots/kroA100_greedy_inner_heuristic.png) | ![greedy_inner_heuristic_B](local-search/plots/kroB100_greedy_inner_heuristic.png) |
-| greedy between random | ![greedy_between_random_A](local-search/plots/kroA100_greedy_between_random.png) | ![greedy_between_random_B](local-search/plots/kroB100_greedy_between_random.png) |
-| greedy between heuristic | ![greedy_between_heuristic_A](local-search/plots/kroA100_greedy_between_heuristic.png) | ![greedy_between_heuristic_B](local-search/plots/kroB100_greedy_between_heuristic.png) |
-| random inner heuristic | ![random_inner_heuristic_A](local-search/plots/kroA100_random_inner_heuristic.png) | ![random_inner_heuristic_B](local-search/plots/kroB100_random_inner_heuristic.png) |
+| random | ![random_A](local-search/plots/kroA200_random.png) | ![random_B](local-search/plots/kroB200_random.png) |
+| heuristic | ![heuristic_A](local-search/plots/kroA200_heuristic.png) | ![heuristic_B](local-search/plots/kroB200_heuristic.png) |
+| local_search_steepest | ![local_search_steepest_A](local-search/plots/kroA200_local_search_steepest.png) | ![local_search_steepest_B](local-search/plots/kroB200_local_search_steepest.png) |
+| candidate_moves | ![candidate_moves_A](local-search/plots/kroA200_candidate_moves.png) | ![candidate_moves_B](local-search/plots/kroB200_candidate_moves.png) |
+| cache_moves | ![cache_moves_A](local-search/plots/kroA200_cache_moves.png) | ![cache_moves_B](local-search/plots/kroB200_cache_moves.png) |
 
 
 ### Wnioski
 
-- Algorytmy lokalnego przeszukiwania, zarówno w wersji stromej jak i zachłannej, wykazują różnice w skuteczności w zależności od wyboru początkowego rozwiązania oraz rodzaju sąsiedztwa.
-- Wykorzystanie heurystyk w początkowych rozwiązaniach znacząco poprawia efektywność algorytmów, szczególnie widoczne jest to w przypadku metodfy stromej.
-- Local search w wersji stromej osiąga zazwyczaj lepsze wyniki od metody zachłannej, co sugeruje, że bardziej dogłębne przeszukiwanie sąsiedztwa przynosi korzyści w przypadku tego konkretnego problemu.
+- Wprowadzenie ocen ruchów z poprzednich iteracji przyspieszyło proces przeszukiwania przestrzeni rozwiązań. Dzięki temu algorytmy lokalnego przeszukiwania mogą szybciej zbliżać się do optymalnego rozwiązania, eliminując zbędne iteracje.
+- Wśród testowanych strategii, algorytm korzystający z ocen ruchów z poprzednich iteracji wykazał się najlepszą wydajnością. Oznacza to, że uwzględnienie historii ocen pozwala lepiej kierować procesem przeszukiwania, wybierając bardziej obiecujące ruchy.
 
 
 ### Kod Programu
 
-Kod programu znajduje się pod [tym linkiem](https://github.com/majsterkovic/imo/blob/main/lab2/) w pliku cpp.
+Kod programu znajduje się pod [tym linkiem](https://github.com/majsterkovic/imo/blob/main/lab3/) w pliku cpp.
