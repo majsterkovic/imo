@@ -477,7 +477,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
             std::pair new_cycles = apply_move(best_move, cycle_1, cycle_2, cycle_index);
             remove_moves(new_moves, to_delete);
 
-//add_new_moves(new_moves, best_move, cycle_index, cycle_1, cycle_2, dist_mat);
+            add_new_moves(new_moves, best_move, cycle_index, cycle_1, cycle_2, dist_mat);
 
             cycle_1 = new_cycles.first;
             cycle_2 = new_cycles.second;
