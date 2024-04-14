@@ -30,6 +30,7 @@ wymiana dwóch krawędzi (odwrócenie podciągu o długości co najmniej 2 ale c
 #include "Utils.h"
 #include "greedy.h"
 #include "local.h"
+#include "local_optim.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -69,11 +70,9 @@ int main(const int argc, char** argv) {
         cycles = greedy::nearest_neighbour(dist_mat);
     }
 
-//    if (method == "steepest" && neighbourhood == "inner") {
-//        cycles = local::local_search_steepest_inner(cycles.first, cycles.second, dist_mat);
-//    }
 
-    c = local::candidate_moves_algorithm(cycles.first, cycles.second, dist_mat, 10);
+    //c = local_optim::candidate_moves_algorithm(cycles.first, cycles.second, dist_mat, 10);
+    c = local_optim::cache_algorithm(cycles.first, cycles.second, dist_mat);
 
     int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);
     int length_after = Utils::calculate_cycle_length(dist_mat, c.first) + Utils::calculate_cycle_length(dist_mat, c.second);
@@ -81,18 +80,8 @@ int main(const int argc, char** argv) {
     std::cout << length_before << std::endl;
     std::cout << length_after << std::endl;
 
-//    } else if (method == "steepest" && neighbourhood == "between") {
-//        c = local::local_search_steepest_between(cycles.first, cycles.second, dist_mat);
-//
-//    } else if (method == "greedy" && neighbourhood == "inner") {
-//        c = local::local_search_greedy_inner(cycles.first, cycles.second, dist_mat);
-//
-//    } else if (method == "greedy" && neighbourhood == "between") {
-//        c = local::local_search_greedy_between(cycles.first, cycles.second, dist_mat);
-//
-//    } else if (method == "random") {
-//        c = local::random_search(cycles.first, cycles.second, dist_mat);
-//    }
+    local_optim::cache_algorithm(cycles.first, cycles.second, dist_mat);
+
 //
 //    int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);
 //    int length_after = Utils::calculate_cycle_length(dist_mat, c.first) + Utils::calculate_cycle_length(dist_mat, c.second);
@@ -106,9 +95,7 @@ int main(const int argc, char** argv) {
 //        fs::create_directories(filePath.parent_path());
 //    }
 //
-//    std::cout << "Ścieżka docelowa: " << filePath << std::endl;
-//
-//
+
 //    std::ofstream cycle_file(filePath, std::ios::app);
 //
 //    if (cycle_file.is_open()) {

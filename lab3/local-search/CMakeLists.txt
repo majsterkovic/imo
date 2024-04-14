@@ -9,4 +9,6 @@ add_executable(local_search main.cpp
         greedy.cpp
         greedy.h
         local.cpp
-        local.h)
+        local.h
+        local_optim.cpp
+        local_optim.h)
