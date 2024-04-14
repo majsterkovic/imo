@@ -7,108 +7,164 @@ Autorzy: Jakub Gołąb, Mariusz Hybiak
 Celem zadania była implementacja algorytmów lokalnego przeszukiwania w wersjach stromej (steepest) i zachłannej (greedy), z dwoma różnym rodzajami sąsiedztwa, starując albo z rozwiązań losowych, albo z rozwiązań uzyskanych za pomocą jednej z heurystyk opracowanych w ramach poprzedniego zadania.
 
 ### Algorytmy
+Generowanie wszystkich możliwych ruchów w ramach pojedynczego cyklu
 ```pseudocode
-// Generowanie wszystkich możliwych ruchów w ramach pojedynczego cyklu
-generate_intra_route_inner(cycle):
-    moves = pusta lista
-    cycle_size = rozmiar(cycle)
+generate_intra_route_inner(cykl):
+
+    ruchy = pusta lista
+    rozmiar_cyklu = długość(cykl)
 
     // Generowanie ruchów odwracających podciągi
-    dla i od 0 do cycle_size-1:
-        dla j od i+1 do cycle_size:
-            dodaj (REVERSE_SUBSEQUENCE, (i, j)) do moves
+    Dla i od 0 do rozmiar_cyklu - 1:
+        Dla j od i + 1 do rozmiar_cyklu:
+            Dodaj (REVERSE_SUBSEQUENCE, (i, j)) do ruchy
 
     // Generowanie ruchów zamieniających wierzchołki
-    dla i od 2 do cycle_size-2:
-        dla j od 0 do cycle_size:
-            dodaj (SWAP_NODES, (j, (j+i) % cycle_size)) do moves
+    Dla i od 2 do rozmiar_cyklu - 2:
+        Dla j od 0 do rozmiar_cyklu:
+            Dodaj (SWAP_NODES, (j, (j + i) % rozmiar_cyklu)) do ruchy
 
-    // Losowe przemieszanie listy ruchów
-    przemieszaj moves
+    Przemieszaj ruchy
 
-    zwróć moves
+    Zwróć ruchy
 ```
 
+Lokalne przeszukiwanie metodą stromą w ramach pojedynczego cyklu
 ```pseudocode
-// Lokalne przeszukiwanie metodą stromą w ramach pojedynczego cyklu
-local_search_steepest_inner_cycle(starting_cycle, dist_mat):
-    moves = generate_intra_route_inner(starting_cycle)
-    tmp_cycle = kopia starting_cycle
-    best_index = -1
-    best_value = 0
+Funkcja local_search_steepest_inner_cycle(początkowy_cykl, dist_mat):
+    ruchy = generate_intra_route_inner(początkowy_cykl)
+    najlepsza_wartość = -∞
 
-    while true:
-        best_index = -1
-        best_value = 0
+    Powtarzaj:
+        Dla każdego indeksu i w zakresie od 0 do długość(ruchy) - 1:
+            ruch = ruchy[i]
 
-        // Dla każdego ruchu z listy ruchów
-        dla każdego i od 0 do rozmiar(moves)-1:
-            move = moves[i]
-            node1 = move.pierwszy_cykl
-            node2 = move.drugi_cykl
-            type = move.typ_ruchu
+            Jeśli typ_ruchu == REVERSE_SUBSEQUENCE:
+                tmp_cykl = odwróć_podciąg(początkowy_cykl, node1, node2)
+                delta = oblicz_delte(początkowy_cykl, tmp_cykl, dist_mat)
 
-            // Obliczanie nowego cyklu i wartości zmiany
-            jeżeli type == REVERSE_SUBSEQUENCE:
-                tmp_cycle = odwróć_podciąg(starting_cycle, node1, node2)
-                delta = oblicz_delte(starting_cycle, tmp_cycle)
-            jeżeli type == SWAP_NODES:
-                tmp_cycle = zamień_wierzchołki(starting_cycle, node1, node2)
-                delta = oblicz_delte(starting_cycle, tmp_cycle)
-            // Jeżeli wartość zmiany jest większa od najlepszej wartości dotychczas
-            jeżeli delta > best_value:
-                best_value = delta
-                best_index = i
+            Jeśli typ_ruchu == SWAP_NODES:
+                tmp_cykl = zamień_wierzchołki(początkowy_cykl, node1, node2)
+                delta = oblicz_delte(początkowy_cykl, tmp_cykl, dist_mat)
 
-        // Jeżeli istnieje lepszy ruch, zastosuj go
-        jeżeli best_value > 0:
-            move = moves[best_index]
-            zastosuj move
-            del(moves[best_index])
+            Jeśli delta > najlepsza_wartość:
+                najlepsza_wartość = delta
+                najlepszy_indeks = i
+
+        Jeśli najlepsza_wartość > 0:
+            Zastosuj ruch z najlepszy_indeks
+        W przeciwnym razie:
+            Przerwij pętlę
+
+    Zwróć finalny_cykl
+
+```
+
+Lokalne przeszukiwanie metodą zachłanną w ramach pojedynczego cyklu
+```pseudocode
+ local_search_greedy_inner_cycle(początkowy_cykl, dist_mat):
+
+    ruchy = generate_intra_route_inner(początkowy_cykl)
+
+    Powtarzaj:
+        najlepsza_wartość = -∞
+        Dla każdego i od 0 do długość(ruchy) - 1:
+            ruch = ruchy[i]
+
+            Jeśli typ_ruchu == REVERSE_SUBSEQUENCE:
+                tmp_cykl = odwróć_podciąg(początkowy_cykl, node1, node2)
+                delta = oblicz_delte(początkowy_cykl, tmp_cykl, dist_mat)
+            Albo jeśli typ_ruchu == SWAP_NODES:
+                tmp_cykl = zamień_wierzchołki(początkowy_cykl, node1, node2)
+                delta = oblicz_delte(początkowy_cykl, tmp_cykl, dist_mat)
+
+            Jeśli delta > najlepsza_wartość:
+                najlepsza_wartość = delta
+                najlepszy_indeks = i
+                Przerwij pętlę for
+
+        Jeśli najlepsza_wartość > 0:
+            Zastosuj ruch określony przez najlepszy_indeks na początkowy_cykl
+        W przeciwnym razie:
+            Przerwij pętlę while
+
+    Zwróć początkowy_cykl jako finalny_cykl
+
+```
+Lokalne przeszukiwanie metodą stromą z wymianami między cyklami
+```pseudocode
+local_search_steepest_between(cycle_1, cycle_2, dist_mat):
+
+    moves = generuj wszystkie możliwe wymiany wierzchołków między cyklami
+    najlepsza_wartość = 0
+    najlepszy_indeks = -1
+
+    dopóki prawda:
+        dla każdego ruchu z listy ruchów:
+            wykonaj ruch
+            oblicz deltę między subdystansami przed i po wykonaniu ruchu
+
+            jeżeli delta > najlepsza_wartość:
+                najlepsza_wartość = delta
+                najlepszy_indeks = indeks aktualnego ruchu
+
+        jeżeli najlepsza_wartość > 0:
+            wykonaj najlepszy ruch
         w przeciwnym razie:
             przerwij pętlę
 
-    zwróć starting_cycle
+    zwróć (cycle_1, cycle_2)
+
 ```
 
+Lokalne przeszukiwanie metodą zachłanną z wymianami między cyklami
 ```pseudocode
-local_search_greedy_inner_cycle(starting_cycle, dist_mat):
-    moves = generate_intra_route_inner(starting_cycle)
-    tmp_cycle = kopia starting_cycle
-    best_index = -1
-    best_value = 0
+local_search_greedy_between(cycle_1, cycle_2, dist_mat):
 
-    // Losowe przemieszanie listy ruchów
-    przemieszaj moves
+    moves = generuj wszystkie możliwe wymiany wierzchołków między cyklami
+    najlepsza_wartość = 0
+    najlepszy_indeks = -1
 
-    // Dla każdego ruchu z listy ruchów
-    dla każdego i od 0 do rozmiar(moves)-1:
-        move = moves[i]
-        node1 = move.drugi.pierwszy
-        node2 = move.drugi.drugi
-        type = move.pierwszy
+    dopóki prawda:
+        dla każdego ruchu z listy ruchów:
+            wykonaj ruch
+            oblicz deltę między subdystansami przed i po wykonaniu ruchu
 
-        // Obliczanie nowego cyklu i wartości zmiany
-        jeżeli type == REVERSE_SUBSEQUENCE:
-            tmp_cycle = odwróć_podciąg(starting_cycle, node1, node2)
-            delta = oblicz_delte(starting_cycle, tmp_cycle)
-        jeżeli type == SWAP_NODES:
-            tmp_cycle = zamień_wierzchołki(starting_cycle, node1, node2)
-            delta = oblicz_delte(starting_cycle, tmp_cycle)
-        // Jeżeli wartość zmiany jest większa od najlepszej wartości dotychczas
-        jeżeli delta > best_value:
-            best_value = delta
-            best_index = i
-            zastosuj ruch move
+            jeżeli delta > najlepsza_wartość:
+                najlepsza_wartość = delta
+                najlepszy_indeks = indeks aktualnego ruchu
+                przerwij pętlę
 
-    zwróć starting_cycle
+        jeżeli najlepsza_wartość > 0:
+            wykonaj najlepszy ruch
+        w przeciwnym razie:
+            przerwij pętlę
+
+    zwróć (cycle_1, cycle_2)
+```
+
+Losowe błądzenie
+```pseudocode
+random_search_cycle(starting_cycle, dist_mat):
+
+    moves = generuj wszystkie możliwe ruchy wewnątrz trasy
+
+    dopóki czas < time_limit_microseconds:
+        weź pierwszy ruch z listy
+
+        jeżeli typ ruchu == REVERSE_SUBSEQUENCE:
+            odwróć podciąg
+        jeżeli typ ruchu == SWAP_NODES:
+            zamień wierzchołki
+
+    zwróć final_cycle
 ```
 
 ### Wyniki eksperymentu obliczeniowego
 
 W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instancji problemu.
 
-| Instancja   | Metoda            | Średnia (min – max) [jednostki odległości]    |
+| Instancja   | Metoda (wersja / typ wymian / początek) | Średnia (min – max) [jednostki odległości]    |
 |-------------|-------------------|-----------------------------|
 | kroA100 | steepest inner random | 33850.48 (30748 - 37235) |
 | kroA100 | steepest inner heuristic | 26816.29 (23281 - 30188) |
