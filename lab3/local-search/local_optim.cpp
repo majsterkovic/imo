@@ -276,6 +276,89 @@ void remove_moves(std::vector<local_optim::move>& moves, const std::vector<local
     }
 }
 
+void add_new_moves(std::vector<local_optim::move>& moves,
+                   const local_optim::move& best_move,
+                   int cycle_index,
+                   std::vector<int>& cycle_1,
+                   std::vector<int>& cycle_2,
+                   std::vector<std::vector<int>>& dist_mat) {
+
+    if(best_move.type == SWAP_EDGE) {
+        std::vector<int> cycle = cycle_index == 1 ? cycle_1 : cycle_2;
+        int cycle_size = cycle.size();
+        int node_b = best_move.data[1];
+        int node_c = best_move.data[2];
+
+        for (int i = 0; i < cycle_size; i++) {
+            if (cycle[i] == node_b || cycle[i] == node_c) {
+                int node_a = cycle[(i - 1 + cycle_size) % cycle_size];
+                int node_d = cycle[(i + 1 + cycle_size) % cycle_size];
+
+                std::vector<int> data = {node_a, cycle[i], node_d};
+                local_optim::move new_move(SWAP_EDGE, data, 0);
+
+                int subdistance_before = dist_mat[node_a][cycle[i]] + dist_mat[cycle[i]][node_d];
+                int subdistance_after = dist_mat[node_a][node_d] + dist_mat[cycle[i]][node_d];
+
+                int delta = subdistance_before - subdistance_after;
+
+                if (delta > 0) {
+                    new_move.score = delta;
+                    moves.push_back(new_move);
+                }
+            }
+        }
+    }
+    else if(best_move.type == SWAP_NODES_BETWEEN_CYCLES) {
+        // Extract the nodes involved in the swap operation
+        int node_b = best_move.data[1];
+        int node_e = best_move.data[4];
+
+        // Generate new moves involving node_b and node_e
+        for (int i = 0; i < cycle_1.size(); i++) {
+            if (cycle_1[i] == node_b || cycle_1[i] == node_e) {
+                int node_a = cycle_1[(i - 1 + cycle_1.size()) % cycle_1.size()];
+                int node_c = cycle_1[(i + 1 + cycle_1.size()) % cycle_1.size()];
+
+                std::vector<int> data = {node_a, cycle_1[i], node_c};
+                local_optim::move new_move(SWAP_NODES_BETWEEN_CYCLES, data, 0);
+
+                int subdistance_before = dist_mat[node_a][cycle_1[i]] + dist_mat[cycle_1[i]][node_c];
+                int subdistance_after = dist_mat[node_a][node_c] + dist_mat[cycle_1[i]][node_c];
+
+                int delta = subdistance_before - subdistance_after;
+
+                if (delta > 0) {
+                    new_move.score = delta;
+                    moves.push_back(new_move);
+                }
+            }
+        }
+
+        for (int i = 0; i < cycle_2.size(); i++) {
+            if (cycle_2[i] == node_b || cycle_2[i] == node_e) {
+                int node_a = cycle_2[(i - 1 + cycle_2.size()) % cycle_2.size()];
+                int node_c = cycle_2[(i + 1 + cycle_2.size()) % cycle_2.size()];
+
+                std::vector<int> data = {node_a, cycle_2[i], node_c};
+                local_optim::move new_move(SWAP_NODES_BETWEEN_CYCLES, data, 0);
+
+                int subdistance_before = dist_mat[node_a][cycle_2[i]] + dist_mat[cycle_2[i]][node_c];
+                int subdistance_after = dist_mat[node_a][node_c] + dist_mat[cycle_2[i]][node_c];
+
+                int delta = subdistance_before - subdistance_after;
+
+                if (delta > 0) {
+                    new_move.score = delta;
+                    moves.push_back(new_move);
+                }
+            }
+        }
+    }
+
+    std::sort(moves.begin(), moves.end(), [](const local_optim::move& a, const local_optim::move& b) { return a.score > b.score; });
+}
+
 std::pair<std::vector<int>, std::vector<int> > apply_move(const local_optim::move& best_move, std::vector<int>& cycle_1, std::vector<int>& cycle_2, int cycle_index) {
     switch (best_move.type) {
         case SWAP_NODES_BETWEEN_CYCLES: {
@@ -332,7 +415,7 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
 
             for (move &m: new_moves) {
                 int type = m.type;
-                print_move(m);
+                //print_move(m);
                 if (type == SWAP_EDGE) {
                     std::vector<int> edges = m.data;
                     std::vector<int> reversed_edges = {edges[1], edges[0], edges[3], edges[2]};
@@ -390,10 +473,11 @@ local_optim::cache_algorithm(std::vector<int> cycle_1, std::vector<int> cycle_2,
                 break;
             }
 
-            remove_moves(new_moves, to_delete);
-            std::pair new_cycles = apply_move(best_move, cycle_1, cycle_2, cycle_index);
 
-            // add new moves...
+            std::pair new_cycles = apply_move(best_move, cycle_1, cycle_2, cycle_index);
+            remove_moves(new_moves, to_delete);
+
+//add_new_moves(new_moves, best_move, cycle_index, cycle_1, cycle_2, dist_mat);
 
             cycle_1 = new_cycles.first;
             cycle_2 = new_cycles.second;
