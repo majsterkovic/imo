@@ -62,12 +62,12 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 | Instancja   | Metoda            | Średnia (min – max) [jednostki odległości] |
 |-------------|-------------------|--------------------------------------------|
 | kroA200 | random | 343397.4 (325622 - 367592)                 |
-| kroA200 | heuristic | 42647.1 (41003 - 43990)                    |
+| kroA200 | heuristic | 85294.2 (82006 - 87980)                    |
 | kroA200 | local_search_steepest | 84107.5 (73714 - 103386)                   |
 | kroA200 | candidate_moves | 119163.6 (97614 - 136954)                  |
 | kroA200 | cache_moves | 102248.9 (99820 - 121120)                  |
 | kroB200 | random | 337828.5 (326222 - 361247)                 |
-| kroB200 | heuristic | 42083.0 (40871 - 43710)                    |
+| kroB200 | heuristic | 84166.0 (81742 - 87420)                    |
 | kroB200 | local_search_steepest | 81853.3 (74057 - 88471)                    |
 | kroB200 | candidate_moves | 134144.1 (109662 - 169742)                 |
 | kroB200 | cache_moves | 120300.5 (111480 - 141315)                 |
