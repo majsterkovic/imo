@@ -26,7 +26,7 @@ neighbourhoods=("inner" "between")
 beginnings=("random" "heuristic")
 
 for instance in "${instances[@]}"; do
-  for (( run=1; run<=10; run++ )); do
+  for (( run=1; run<=3; run++ )); do
     ./local_search "$instance" "random" "inner" "random" "$run"
   done
 done
