@@ -148,21 +148,21 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
     <tr>
       <th rowspan="3" valign="top">kroB200.tsp</th>
       <th>MSLS</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>43922.327</td>
+      <td>43964.201</td>
+      <td>44285.143</td>
     </tr>
     <tr>
       <th>ISL1</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>45593.615</td>
+      <td>46553.961</td>
+      <td>47873.625</td>
     </tr>
     <tr>
       <th>ISL2</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>32118.157</td>
+      <td>36719.520</td>
+      <td>39958.189</td>
     </tr>
   </tbody>
 </table>
@@ -217,21 +217,21 @@ W tabeli przedstawiono średni czas działania algorytmu.
     <tr>
       <th rowspan="3" valign="top">kroB200.tsp</th>
       <th>MSLS</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>403.026</td>
+      <td>407.896</td>
+      <td>414.910</td>
     </tr>
     <tr>
       <th>ISL1</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>407.059</td>
+      <td>412.071</td>
+      <td>419.148</td>
     </tr>
     <tr>
       <th>ISL2</th>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td>408.103</td>
+      <td>412.903</td>
+      <td>420.416</td>
     </tr>
   </tbody>
 </table>
@@ -247,8 +247,8 @@ W tabeli przedstawiono średni czas działania algorytmu.
 
 
 ### Wnioski
-- Wnioski do napisania.
+- Najwaniejszą obserwacją jest fakt, e algorytm ISL2, którego zadaniem było znaczące zepsucie biezącego rozwiązania (w naszym przypadku 30% całego cyklu) oraz próba jego naprawy przy uzyciu heurystyki daje najlepsze rezultaty. Widać to po sumarycznej długości najlepszych cykli, oraz to, ze na płaszczyźnie dwuwymiarowej obydwa cykle są wyraźnie rozdzielone i praktycznie w ogóle na siebie nie nachodzą.
 
 ### Kod programu
 
-Kod programu znajduje się pod [tym linkiem](https://github.com/majsterkovic/imo/blob/main/lab3/).
+Kod programu znajduje się pod [tym linkiem](https://github.com/majsterkovic/imo/blob/main/lab4/).
