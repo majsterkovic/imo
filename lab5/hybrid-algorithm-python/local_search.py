@@ -68,3 +68,30 @@ def local_search_steepest(cycle1, cycle2, distance, data, VISUALIZE=False):
             break
 
     return cycle1, cycle2
+
+def local_search_greedy(cycle1, cycle2, distance, data, VISUALIZE=False):
+
+    moves = generate_moves(cycle1)
+
+    while True:
+
+        best_move = None
+        best_delta = 0
+
+        for move in moves:
+
+            delta = rank_move(move, cycle1, cycle2, distance)
+            if delta < best_delta:
+                best_move = move
+                best_delta = delta
+                break
+                
+        if best_delta < 0:
+            cycle1, cycle2 = apply_move(best_move, cycle1, cycle2)
+            if VISUALIZE:
+                clear_output(wait=True)
+                plot_cycles(cycle1, cycle2, data)
+        elif best_move is None:
+            break
+
+    return cycle1, cycle2

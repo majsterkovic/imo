@@ -57,25 +57,27 @@ def plot_cities(data: Dict[Any, Any]) -> None:
 def plot_cycles(cycle1: List, cycle2: List, tsp_data: Dict[Any, Any], file_name=None) -> None:
     plt.figure(figsize=(8, 6))
 
-    for city in cycle1:
-        plt.scatter(tsp_data[city][0], tsp_data[city][1], color='red', s=30)
-        plt.text(tsp_data[city][0], tsp_data[city][1], str(city), fontsize=9, ha='left', va='bottom')
+    if len(cycle1) !=0:
+        for city in cycle1:
+            plt.scatter(tsp_data[city][0], tsp_data[city][1], color='red', s=30)
+            plt.text(tsp_data[city][0], tsp_data[city][1], str(city), fontsize=9, ha='left', va='bottom')
 
-    cycle1_x = [tsp_data[city][0] for city in cycle1]
-    cycle1_y = [tsp_data[city][1] for city in cycle1]
-    cycle1_x.append(cycle1_x[0])
-    cycle1_y.append(cycle1_y[0])
-    plt.plot(cycle1_x, cycle1_y, linestyle='-', color='blue', label='Cycle 1')
+        cycle1_x = [tsp_data[city][0] for city in cycle1]
+        cycle1_y = [tsp_data[city][1] for city in cycle1]
+        cycle1_x.append(cycle1_x[0])
+        cycle1_y.append(cycle1_y[0])
+        plt.plot(cycle1_x, cycle1_y, linestyle='-', color='blue', label='Cycle 1')
 
-    for city in cycle2:
-        plt.scatter(tsp_data[city][0], tsp_data[city][1], color='red', s=30)
-        plt.text(tsp_data[city][0], tsp_data[city][1], str(city), fontsize=9, ha='left', va='bottom')
+    if len(cycle2) != 0:
+        for city in cycle2:
+            plt.scatter(tsp_data[city][0], tsp_data[city][1], color='red', s=30)
+            plt.text(tsp_data[city][0], tsp_data[city][1], str(city), fontsize=9, ha='left', va='bottom')
 
-    cycle2_x = [tsp_data[city][0] for city in cycle2]
-    cycle2_y = [tsp_data[city][1] for city in cycle2]
-    cycle2_x.append(cycle2_x[0])
-    cycle2_y.append(cycle2_y[0])
-    plt.plot(cycle2_x, cycle2_y, linestyle='-', color='green', label='Cycle 2')
+        cycle2_x = [tsp_data[city][0] for city in cycle2]
+        cycle2_y = [tsp_data[city][1] for city in cycle2]
+        cycle2_x.append(cycle2_x[0])
+        cycle2_y.append(cycle2_y[0])
+        plt.plot(cycle2_x, cycle2_y, linestyle='-', color='green', label='Cycle 2')
 
     plt.title('Visualization of Cycles')
     plt.xlabel('X-coordinate')
