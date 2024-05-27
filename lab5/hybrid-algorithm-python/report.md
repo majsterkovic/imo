@@ -146,10 +146,12 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 | datakroB200.tsp      | ![](./4plots/plot_datakroB200tsp_ILS1.png) | ![](./4plots/plot_datakroB200tsp_ILS2.png)| ![](./4plots/plot_datakroB200tsp_ILS2a.png) | ![](./4plots/plot_datakroB200tsp_MSLS.png) |
 
 
-
-
 ### Wnioski
--
+Hybrydowy algorytm ewolucyjny (HAE) wykazał się konkurencyjną wydajnością w porównaniu z metodami MSLS i ILS. HAE z lokalnym przeszukiwaniem (HAE+local) osiągał lepsze wyniki pod względem minimalnej długości cykli w obu instancjach problemu (kroA200.tsp i kroB200.tsp).
+
+Algorytm HAE, zarówno z lokalnym przeszukiwaniem, jak i bez, działał znacząco szybciej niż metody ILS i MSLS. Czas trwania algorytmu HAE wynosił około 200 sekund, podczas gdy metody ILS i MSLS potrzebowały około 400 sekund na wykonanie.
+
+Podsumowując, hybrydowy algorytm ewolucyjny, szczególnie w połączeniu z lokalnym przeszukiwaniem, okazał się być efektywną metodą optymalizacji, osiągając lepsze wyniki w krótszym czasie w porównaniu z tradycyjnymi metodami MSLS i ILS.
 
 ### Kod programu
 
