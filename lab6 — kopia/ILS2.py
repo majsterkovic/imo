@@ -3,7 +3,9 @@ from random_cycles import gen_random_cycles
 from local_search import local_search_steepest
 
 
-def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.2):
+def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.1):
+    original_cycle1_len = len(cycle1)
+    original_cycle2_len = len(cycle2)
 
     # Destroy
     random1 = list(np.random.choice(cycle1, int(len(cycle1) * size), replace=False))
@@ -12,14 +14,15 @@ def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.2):
     random2 = list(np.random.choice(cycle2, int(len(cycle2) * size), replace=False))
     cycle2 = list(np.setdiff1d(cycle2, random2, assume_unique=True))
 
-    # Repair greedy
+
     free_nodes = random1 + random2
 
-    while len(free_nodes) > 0:
+    # Rebuild cycle1 first
+    while len(cycle1) < original_cycle1_len:
         best_update1 = float('inf')
         best_node1 = None
         best_position1 = -1
-        
+
         for node in free_nodes:
             for i in range(len(cycle1)):
                 distance_update = distance_matrix[cycle1[i-1]][node] + distance_matrix[node][cycle1[i]] - distance_matrix[cycle1[i-1]][cycle1[i]]
@@ -27,15 +30,17 @@ def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.2):
                     best_update1 = distance_update
                     best_node1 = node
                     best_position1 = i
-        
+
         if best_node1 is not None:
             cycle1.insert(best_position1, best_node1)
             free_nodes.remove(best_node1)
-        
+
+    # Then rebuild cycle2 with the remaining free nodes
+    while len(free_nodes) > 0:
         best_update2 = float('inf')
         best_node2 = None
         best_position2 = -1
-        
+
         for node in free_nodes:
             for i in range(len(cycle2)):
                 distance_update = distance_matrix[cycle2[i-1]][node] + distance_matrix[node][cycle2[i]] - distance_matrix[cycle2[i-1]][cycle2[i]]
@@ -43,7 +48,7 @@ def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.2):
                     best_update2 = distance_update
                     best_node2 = node
                     best_position2 = i
-        
+
         if best_node2 is not None:
             cycle2.insert(best_position2, best_node2)
             free_nodes.remove(best_node2)
