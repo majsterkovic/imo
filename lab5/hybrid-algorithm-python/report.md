@@ -8,11 +8,6 @@ Celem zadania była implementacja hybrydowego algorytmu ewolucyjnego (HAE) i por
 
 Dla każdego algorytmu zostało wykonane 10 iteracji na instancjach testowych kroA200.tsp i kroB200.tsp.
 
-### Algorytmy
-#### HAE
-```pseudocode
-
-```
 ### Parametry:
 #### HAE
 - populacja elitarna: 20
@@ -24,6 +19,90 @@ Dla każdego algorytmu zostało wykonane 10 iteracji na instancjach testowych kr
 #### ILS2
 - czas trwania: taki jak MSLS
 - wielkość perturbacji: 20%
+
+### Algorytmy
+``` pseudocode
+function hybrid_evolutionary_algorithm:
+    Inicjalizuj populację za pomocą funkcji gen_initial_population
+    Dla każdej generacji w num_generations:
+        Wybierz losowo dwóch rodziców (x, y) z populacji
+        //Przeprowadź rekombinację rodziców, aby uzyskać potomstwo
+        potomstwo = recombine(x, y)
+        Jeśli tryb lokalny jest włączony:
+            Zastosuj lokalne przeszukiwanie do potomstwa
+            potomstwo = local_search(potomstwo)
+        //Znajdź najgorszego osobnika w populacji
+        worst = argmax(population)
+
+        //Jeśli potomstwo jest lepsze niż najgorszy osobnik i jest wystarczająco różnorodne
+        if offspring.length < worst.length and is_diverse(offspring) then
+            Zastąp najgorszego osobnika w populacji potomstwem
+
+    //Znajdź najlepszego osobnika w populacji
+    best = argmin(population)
+    //Zwróć najlepszego osobnika
+    return best
+```
+
+``` pseudocode
+function is_diverse:
+    //Oblicz długość cykli przekazanego osobnika
+    individual_length = calculate_length(individual)
+    Dla każdego osobnika w populacji:
+        Oblicz długość cykli tego osobnika
+        //Jeśli różnica długości cykli jest mniejsza niż próg
+        if abs(individual_length - osobnik.length) < threshold * individual_length:
+            Zwróć fałsz
+    Zwróć prawdę
+```
+
+``` pseudocode
+function recombine:
+    Zidentyfikuj krawędzie występujące w drugim rodzicu
+    //Utwórz kopie cykli pierwszego rodzica
+    cycle1 = deepcopy(parent1[0])
+    cycle2 = deepcopy(parent1[1])
+
+    Oznacz krawędzie występujące zarówno w cyklach pierwszego rodzica, jak i w krawędziach drugiego rodzica
+    for index in cycle1.length:
+        if (cycle1[index], cycle1[(index+1) % cycle1.length]) in edges_in_parent_2:
+            cycle1_marked[index] = True
+            cycle1_marked[(index+1) % cycle1.length] = True
+    
+    for index in cycle2.length:
+        if (cycle2[index], cycle2[(index+1) % cycle2.length]) in edges_in_parent_2:
+            cycle2_marked[index] = True
+            cycle2_marked[(index+1) % cycle2.length] = True
+
+    Zidentyfikuj wolne wierzchołki, które nie są oznaczone w cyklach
+
+    Usuń nieoznaczone wierzchołki z cykli
+
+    Dopóki istnieją wolne wierzchołki:
+        Jeśli cykl1 jest krótszy niż 100 wierzchołków:
+            Znajdź najlepszy wierzchołek do dodania do cyklu1
+            Dodaj wierzchołek do cyklu1 i usuń go z wolnych wierzchołków
+
+        Jeśli cykl2 jest krótszy niż 100 wierzchołków:
+            Znajdź najlepszy wierzchołek do dodania do cyklu2
+            Dodaj wierzchołek do cyklu2 i usuń go z wolnych wierzchołków
+
+    //Zwróć zrekombinowane cykle
+    return cycle1, cycle2
+```
+
+``` pseudocode
+function gen_initial_population:
+    Inicjalizuj pustą populację
+    for _ in 0...size:
+        //Wygeneruj losowe cykle z danych
+        random = get_random_cycles(data)
+        //Zastosuj lokalne przeszukiwanie do losowych cykli
+        ls = local_search(random)
+        
+        Dodaj przeszukane lokalnie cykle do populacji
+    Zwróć populację
+```
 
 
 ### Wyniki eksperymentu obliczeniowego
@@ -67,10 +146,12 @@ W tabeli przedstawiono sumy długości cykli dla każdej z metod dla obu instanc
 | datakroB200.tsp      | ![](./4plots/plot_datakroB200tsp_ILS1.png) | ![](./4plots/plot_datakroB200tsp_ILS2.png)| ![](./4plots/plot_datakroB200tsp_ILS2a.png) | ![](./4plots/plot_datakroB200tsp_MSLS.png) |
 
 
-
-
 ### Wnioski
--
+Hybrydowy algorytm ewolucyjny (HAE) wykazał się konkurencyjną wydajnością w porównaniu z metodami MSLS i ILS. HAE z lokalnym przeszukiwaniem (HAE+local) osiągał lepsze wyniki pod względem minimalnej długości cykli w obu instancjach problemu (kroA200.tsp i kroB200.tsp).
+
+Algorytm HAE, zarówno z lokalnym przeszukiwaniem, jak i bez, działał znacząco szybciej niż metody ILS i MSLS. Czas trwania algorytmu HAE wynosił około 200 sekund, podczas gdy metody ILS i MSLS potrzebowały około 400 sekund na wykonanie.
+
+Podsumowując, hybrydowy algorytm ewolucyjny, szczególnie w połączeniu z lokalnym przeszukiwaniem, okazał się być efektywną metodą optymalizacji, osiągając lepsze wyniki w krótszym czasie w porównaniu z tradycyjnymi metodami MSLS i ILS.
 
 ### Kod programu
 
