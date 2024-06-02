@@ -52,7 +52,7 @@ def calculate_mean_common_nodes(c1a, c1b, cycles):
 #### Instancja kroA200.tsp
 ![Wykres A](./../plots/output_a.png)
 
-</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
 
 
 #### Instancja kroB200.tsp
