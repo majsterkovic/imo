@@ -11,8 +11,12 @@ def calculate_common_edges(c1a, c1b, c2a, c2b):
     edges_in_c1 = set(cycle_to_edges(c1a)).union(cycle_to_edges(c1b))
     edges_in_c2 = set(cycle_to_edges(c2a)).union(cycle_to_edges(c2b))
 
-    common_edges = edges_in_c1.intersection(edges_in_c2)
-    percentage = len(common_edges) / len(edges_in_c1)
+    # common_edges = edges_in_c1.intersection(edges_in_c2)
+    common = 0
+    for (a,b) in edges_in_c1:
+        if (a,b) in edges_in_c2 or (b,a) in edges_in_c2:
+            common += 1
+    percentage = common / len(edges_in_c1)
     return percentage
 
 def calculate_common_nodes(c1a, c1b, c2a, c2b):
