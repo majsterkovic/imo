@@ -1,24 +1,27 @@
 from utils import *
 from random_cycles import gen_random_cycles
 from local_search import local_search_steepest
+from copy import deepcopy
 
 
-def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.1):
-    original_cycle1_len = len(cycle1)
-    original_cycle2_len = len(cycle2)
+def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.05):
 
-    # Destroy
+    # copy cycles
+    cycle1_copy = deepcopy(cycle1)
+    cycle2_copy = deepcopy(cycle2)
+
     random1 = list(np.random.choice(cycle1, int(len(cycle1) * size), replace=False))
-    cycle1 = list(np.setdiff1d(cycle1, random1, assume_unique=True))
+    cycle1 = [node for node in cycle1 if node not in random1]
 
     random2 = list(np.random.choice(cycle2, int(len(cycle2) * size), replace=False))
-    cycle2 = list(np.setdiff1d(cycle2, random2, assume_unique=True))
+    cycle2 = [node for node in cycle2 if node not in random2]
 
 
     free_nodes = random1 + random2
+    if len(free_nodes) == 200:
+        return np.array(cycle1_copy), np.array(cycle2_copy)
 
-    # Rebuild cycle1 first
-    while len(cycle1) < original_cycle1_len:
+    while len(cycle1) < 100:
         best_update1 = float('inf')
         best_node1 = None
         best_position1 = -1
@@ -34,8 +37,7 @@ def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.1):
         if best_node1 is not None:
             cycle1.insert(best_position1, best_node1)
             free_nodes.remove(best_node1)
-
-
+    
     while len(free_nodes) > 0:
         best_update2 = float('inf')
         best_node2 = None
@@ -52,7 +54,7 @@ def severe_perturbation(cycle1, cycle2, distance_matrix, size=0.1):
         if best_node2 is not None:
             cycle2.insert(best_position2, best_node2)
             free_nodes.remove(best_node2)
-
+      
     return np.array(cycle1), np.array(cycle2)
 
 def ILS2(distance_matrix, data, time_MSLS, local=False):
