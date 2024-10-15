@@ -1,32 +1,4 @@
 
-
-/*
- Zadanie polega na implementacji lokalnego przeszukiwania w wersjach stromej (steepest) i
-zachłannej (greedy), z dwoma różnym rodzajami sąsiedztwa, starując albo z rozwiązań losowych, albo
-z rozwiązań uzyskanych za pomocą jednej z heurystyk opracowanych w ramach poprzedniego
-zadania. W sumie 8 kombinacji - wersji lokalnego przeszukiwania.
-Jako punkt odniesienia należy zaimplementować algorytm losowego błądzenia, który w każdej iteracji
-wykonuje losowo wybrany ruch (niezależnie od jego oceny) i zwraca najlepsze znalezione w ten
-sposób rozwiązanie. Algorytm ten powinien działać w takim samym czasie jak średnio najwolniejsza z
-wersji lokalnego przeszukiwania.
-Sąsiedztwa
-W przypadku rozważanego problemu potrzebne będą dwa typy ruchów: ruchy zmieniające zbiory
-wierzchołków tworzące dwa cykle i ruchy wewnątrztrasowe, które jedynie zmieniają kolejność
-wierzchołków na trasie.
-2 - różne starty
-2 - wersje algorytmu
-2 - ruchy wewnątrz trasy / zmieniające zbiory wierzchołków
-
-Rozaje ruchów:
-wymiana dwóch wierzchołków (zamiana dwóch cyfr miejscami)
-wymiana dwóch krawędzi (odwrócenie podciągu o długości co najmniej 2 ale co najmniej 2 elementy powinny zostać na swoich miejscach)
-
-1 2 3 4 5 6 7 8 9
-1 2 6 5 4 3 7 8 9
- */
-
-//#include <pstl/parallel_backend_utils.h>
-
 #include "Utils.h"
 #include "greedy.h"
 #include "local.h"
@@ -50,7 +22,7 @@ int main(const int argc, char** argv) {
         beginning = argv[4];
         run_nr = std::stoi(argv[5]);
     } else {
-        instance = "kroB100";
+        instance = "kroB200";
         method = "steepest";
         neighbourhood = "inner";
         beginning = "random";
@@ -65,71 +37,16 @@ int main(const int argc, char** argv) {
     std::pair<std::vector<int>, std::vector<int>> cycles;
     std::pair<std::vector<int>, std::vector<int>> c;
 
+ // measure time of 1000 local_search_greedy
 
-    if (beginning == "random") {
-        cycles = Utils::random_cycles(dist_mat);
-    } else if (beginning == "heuristic") {
-        cycles = greedy::nearest_neighbour(dist_mat);
-    }
+    int start_time = 0;
+    int end_time = 0;
 
-    if (method == "steepest" && neighbourhood == "inner") {
-        c = local::local_search_steepest_inner(cycles.first, cycles.second, dist_mat);
+    for (int i = 0; i < 1000; i++) {
+        start_time = clock();
+        r = Utils::random_cycles(dist_mat);
 
-    } else if (method == "steepest" && neighbourhood == "between") {
-        c = local::local_search_steepest_between(cycles.first, cycles.second, dist_mat);
-
-    } else if (method == "greedy" && neighbourhood == "inner") {
-        c = local::local_search_greedy_inner(cycles.first, cycles.second, dist_mat);
-
-    } else if (method == "greedy" && neighbourhood == "between") {
-        c = local::local_search_greedy_between(cycles.first, cycles.second, dist_mat);
-
-    } else if (method == "random") {
-        c = local::random_search(cycles.first, cycles.second, dist_mat);
-    }
-
-    int length_before = Utils::calculate_cycle_length(dist_mat, cycles.first) + Utils::calculate_cycle_length(dist_mat, cycles.second);
-    int length_after = Utils::calculate_cycle_length(dist_mat, c.first) + Utils::calculate_cycle_length(dist_mat, c.second);
-
-    std::string directoryPath = "output/" + method + "/" + neighbourhood + "/" + beginning;
-    std::string fileName = instance + ".txt";
-
-    fs::path filePath = fs::path(directoryPath) / fileName;
-
-    if (!fs::exists(directoryPath)) {
-        fs::create_directories(filePath.parent_path());
-    }
-
-    std::cout << "Ścieżka docelowa: " << filePath << std::endl;
-
-
-    std::ofstream cycle_file(filePath, std::ios::app);
-
-    if (cycle_file.is_open()) {
-
-        cycle_file << run_nr << ": ";
-        cycle_file << length_after << " ";
-
-        for (const auto& elem : c.first) {
-            cycle_file << elem << " ";
-        }
-
-        cycle_file << std::endl;
-
-        cycle_file << run_nr << ": ";
-        cycle_file << length_after << " ";
-
-        for (const auto& elem : c.second) {
-            cycle_file << elem << " ";
-        }
-
-        cycle_file << std::endl;
-        cycle_file.close();
-
-        std::cout << "Cycle exported" << std::endl;
-    } else {
-        std::cerr << "Unable to open for export." << std::endl;
-    }
-
+        cycles = greedy::greedy_cycle(dist_mat);
+        end_time = clock();
 
 }
